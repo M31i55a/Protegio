@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wappa Scanner</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #0f0f1a; color: #e0e0e0; min-height: 100vh; }
+        header { background: #1a1a2e; padding: 20px 40px; border-bottom: 2px solid #00d4ff; display: flex; justify-content: space-between; align-items: center; }
+        header h1 { color: #00d4ff; font-size: 2rem; }
+        header p { color: #888; margin-top: 5px; }
+        .nav a { color: #00d4ff; text-decoration: none; margin-left: 20px; font-size: 0.95rem; padding: 8px 16px; border: 1px solid #00d4ff; border-radius: 8px; transition: all 0.2s; }
+        .nav a:hover { background: #00d4ff; color: #000; }
+        .nav a.green { border-color: #00ff88; color: #00ff88; }
+        .nav a.green:hover { background: #00ff88; color: #000; }
+        .nav a.red { border-color: #ff6b6b; color: #ff6b6b; }
+        .nav a.red:hover { background: #ff6b6b; color: #fff; }
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+
+        /* Tabs */
+        .tabs { display: flex; gap: 10px; margin-bottom: 25px; }
+        .tab-btn {
+            padding: 10px 25px; border-radius: 8px; border: 2px solid #00d4ff;
+            background: transparent; color: #00d4ff; cursor: pointer; font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+        .tab-btn.active { background: #00d4ff; color: #000; font-weight: bold; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Formulaires */
+        .search-box { display: flex; gap: 10px; margin-bottom: 30px; }
+        .search-box input {
+            flex: 1; padding: 14px 20px; border-radius: 8px;
+            border: 2px solid #00d4ff; background: #1a1a2e; color: #fff; font-size: 1rem;
+        }
+        .search-box button, .btn {
+            padding: 14px 30px; background: #00d4ff; color: #000;
+            border: none; border-radius: 8px; font-size: 1rem;
+            font-weight: bold; cursor: pointer; text-decoration: none;
+            display: inline-block;
+        }
+        .btn:hover, .search-box button:hover { background: #00b8d9; }
+        .btn-red { background: #ff4444; color: #fff; }
+        .btn-green { background: #00ff88; color: #000; }
+        textarea {
+            width: 100%; padding: 14px; border-radius: 8px;
+            border: 2px solid #00d4ff; background: #1a1a2e;
+            color: #fff; font-size: 0.95rem; resize: vertical;
+            margin-bottom: 15px;
+        }
+
+        /* Résultats */
+        .result-box { background: #1a1a2e; border-radius: 12px; padding: 25px; margin-bottom: 25px; border: 1px solid #2a2a4a; }
+        .result-box h2 { color: #00d4ff; margin-bottom: 12px; font-size: 1.1rem; word-break: break-all; }
+        .status { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; margin-bottom: 15px; }
+        .status.ok { background: #00ff88; color: #000; }
+        .status.err { background: #ff4444; color: #fff; }
+        .tech-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+        .tech-card {
+            background: #0f0f1a; border: 1px solid #2a2a4a;
+            border-radius: 8px; padding: 12px 16px;
+            display: flex; align-items: center; gap: 10px;
+            transition: border-color 0.2s;
+        }
+        .tech-card:hover { border-color: #00d4ff; }
+        .tech-card img { width: 28px; height: 28px; object-fit: contain; }
+        .tech-icon { font-size: 1.6rem; }
+        .tech-card .name { font-weight: bold; color: #fff; font-size: 0.9rem; }
+        .tech-card .version { color: #00d4ff; font-size: 0.75rem; margin-top: 1px; }
+        .tech-card .category { font-size: 0.75rem; color: #888; margin-top: 2px; }
+        .no-tech { color: #888; font-style: italic; }
+        .error-msg { background: #ff4444; color: #fff; padding: 12px; border-radius: 8px; margin-bottom: 15px; }
+
+        /* Export */
+        .export-bar { display: flex; gap: 10px; margin-bottom: 25px; align-items: center; }
+        .export-bar span { color: #888; }
+
+        /* Historique */
+        .history { background: #1a1a2e; border-radius: 12px; padding: 25px; border: 1px solid #2a2a4a; }
+        .history h2 { color: #00d4ff; margin-bottom: 15px; }
+        .history-item { padding: 10px 0; border-bottom: 1px solid #2a2a4a; display: flex; justify-content: space-between; align-items: center; }
+        .history-item:last-child { border-bottom: none; }
+        .history-item .url { color: #fff; font-size: 0.9rem; }
+        .history-item .date { color: #888; font-size: 0.8rem; }
+        .badge { display: inline-block; background: #2a2a4a; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; margin-left: 8px; color: #00d4ff; }
+
+        /* Bulk */
+        .bulk-summary { color: #00ff88; margin-bottom: 20px; font-weight: bold; }
+
+        /* Loader */
+        .loader { display: none; text-align: center; padding: 30px; color: #00d4ff; }
+        .loader.active { display: block; }
+        .spinner { border: 3px solid #2a2a4a; border-top: 3px solid #00d4ff; border-radius: 50%; width: 40px; height: 40px; animation: spin 0.8s linear infinite; margin: 0 auto 15px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<header>
+    <div>
+        <h1>🔍 Wappa Scanner</h1>
+        <p>Détectez les technologies utilisées par n'importe quel site web</p>
+    </div>
+    <nav class="nav">
+        <a href="/">🔍 Scanner</a>
+        <a href="/dashboard/">📊 Dashboard</a>
+        <a href="/export/csv/" class="green">⬇️ CSV</a>
+        <a href="/export/pdf/" class="red">📄 PDF</a>
+    </nav>
+</header>
+
+<div class="container">
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('single', event)">🎯 Scan Simple</button>
+        <button class="tab-btn" onclick="switchTab('bulk', event)">📋 Scan de Masse</button>
+    </div>
+
+    <!-- Scan Simple -->
+    <div id="tab-single" class="tab-content active">
+        <form method="POST" class="search-box" onsubmit="showLoader('loader-single')">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="single">
+            <input type="text" name="url" placeholder="https://example.com" value="{{ result.url|default:'' }}" required>
+            <button type="submit">Scanner</button>
+        </form>
+
+        <div id="loader-single" class="loader">
+            <div class="spinner"></div>
+            Analyse en cours...
+        </div>
+
+        {% if result %}
+            {% if result.error %}
+                <div class="error-msg">❌ {{ result.error }}</div>
+            {% else %}
+                <div class="result-box">
+                    <h2>🌐 {{ result.url }}</h2>
+                    <span class="status ok">HTTP {{ result.status_code }}</span>
+                    {% if result.technologies %}
+                        <div class="tech-grid">
+                            {% for tech in result.technologies %}
+                                <div class="tech-card">
+                                    {% if tech.icon %}
+                                        <img src="{{ tech.icon }}" alt="{{ tech.name }}" onerror="this.style.display='none'">
+                                    {% else %}
+                                        <span class="tech-icon">⚙️</span>
+                                    {% endif %}
+                                    <div>
+                                        <div class="name">{{ tech.name }}</div>
+                                        {% if tech.version %}
+                                            <div class="version">v{{ tech.version }}</div>
+                                        {% endif %}
+                                        <div class="category">{{ tech.category }}</div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="no-tech">Aucune technologie détectée.</p>
+                    {% endif %}
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <!-- Scan de Masse -->
+    <div id="tab-bulk" class="tab-content">
+        <form method="POST" onsubmit="showLoader('loader-bulk')">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="bulk">
+            <textarea name="urls" rows="6" placeholder="https://wordpress.com&#10;https://vercel.com&#10;https://shopify.com&#10;(une URL par ligne)"></textarea>
+            <button type="submit" class="btn">🚀 Scanner tout</button>
+        </form>
+
+        <div id="loader-bulk" class="loader">
+            <div class="spinner"></div>
+            Scan de masse en cours...
+        </div>
+
+        {% if bulk_results %}
+            <br>
+            <p class="bulk-summary">✅ {{ bulk_results|length }} site(s) scannés</p>
+            {% for res in bulk_results %}
+                <div class="result-box">
+                    <h2>🌐 {{ res.url }}</h2>
+                    {% if res.error %}
+                        <div class="error-msg">❌ {{ res.error }}</div>
+                    {% else %}
+                        <span class="status ok">HTTP {{ res.status_code }}</span>
+                        {% if res.technologies %}
+                            <div class="tech-grid">
+                                {% for tech in res.technologies %}
+                                    <div class="tech-card">
+                                        {% if tech.icon %}
+                                            <img src="{{ tech.icon }}" alt="{{ tech.name }}" onerror="this.style.display='none'">
+                                        {% else %}
+                                            <span class="tech-icon">⚙️</span>
+                                        {% endif %}
+                                        <div>
+                                            <div class="name">{{ tech.name }}</div>
+                                            {% if tech.version %}
+                                                <div class="version">v{{ tech.version }}</div>
+                                            {% endif %}
+                                            <div class="category">{{ tech.category }}</div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="no-tech">Aucune technologie détectée.</p>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <!-- Historique -->
+    {% if history %}
+        <div class="history">
+            <h2>📋 Historique des scans</h2>
+            {% for scan in history %}
+                <div class="history-item">
+                    <span class="url">
+                        {{ scan.url }}
+                        <span class="badge">{{ scan.technologies|length }} tech</span>
+                    </span>
+                    <span class="date">{{ scan.scanned_at|date:"d/m/Y H:i" }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+</div>
+
+<script>
+function switchTab(tab, event) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    event.target.classList.add('active');
+}
+
+function showLoader(id) {
+    document.getElementById(id).classList.add('active');
+}
+</script>
+
+</body>
+</html>

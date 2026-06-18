@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SQLMap Pro Interface</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+    .toggle-checkbox:checked { right: 0; border-color: #22c55e; }
+    .toggle-checkbox:checked + .toggle-label { background-color: #22c55e; }
+    .toggle-checkbox { transition: all 0.3s; }
+    .toggle-label { transition: all 0.3s; }
+</style>
+</head>
+
+<body class="bg-[#0f172a] text-white">
+<div class="flex h-screen">
+
+<!-- Sidebar -->
+<div class="w-80 bg-[#111827] p-5 overflow-y-auto flex-shrink-0">
+    <h1 class="text-xl font-bold mb-6">🧠 SQLMap Interface</h1>
+
+    <label class="text-sm text-gray-400">URL cible *</label>
+    <input id="url" class="w-full p-2 mb-3 bg-gray-800 rounded text-sm" placeholder="http://example.com?id=1">
+
+    <label class="text-sm text-gray-400">Données POST</label>
+    <textarea id="post" class="w-full p-2 mb-3 bg-gray-800 rounded text-sm h-16"></textarea>
+
+    <label class="text-sm text-gray-400">Cookie</label>
+    <input id="cookie" class="w-full p-2 mb-3 bg-gray-800 rounded text-sm">
+
+    <label class="text-sm text-gray-400">Headers</label>
+    <textarea id="headers" class="w-full p-2 mb-3 bg-gray-800 rounded text-sm h-16"></textarea>
+
+    <!-- DÉTECTION -->
+    <h2 class="mt-4 mb-2 text-xs font-bold text-gray-400 uppercase tracking-widest">⚙️ Détection</h2>
+    <div class="flex gap-2 mb-3">
+        <select id="level" class="flex-1 p-2 bg-gray-800 rounded text-sm">
+            <option value="1">Level 1</option>
+            <option value="3" selected>Level 3</option>
+            <option value="5">Level 5</option>
+        </select>
+        <select id="risk" class="flex-1 p-2 bg-gray-800 rounded text-sm">
+            <option value="1">Risk 1</option>
+            <option value="2" selected>Risk 2</option>
+            <option value="3">Risk 3</option>
+        </select>
+    </div>
+
+    <label class="text-sm text-gray-400">Techniques d'injection</label>
+    <select id="technique" class="w-full p-2 bg-gray-800 rounded mb-4 text-sm">
+        <option value="BEUSTQ">Toutes (BEUSTQ)</option>
+        <option value="B">Boolean-based (B)</option>
+        <option value="E">Error-based (E)</option>
+        <option value="U">UNION (U)</option>
+        <option value="S">Stacked queries (S)</option>
+        <option value="T">Time-based (T)</option>
+        <option value="Q">Inline queries (Q)</option>
+    </select>
+
+    <!-- EXTRACTION -->
+    <h2 class="mb-3 text-xs font-bold text-gray-400 uppercase tracking-widest">📦 Extraction</h2>
+
+    <div class="flex items-center justify-between mb-3">
+        <label class="text-sm text-gray-300">Lister les bases (--dbs)</label>
+        <div class="relative inline-block w-10 align-middle select-none">
+            <input type="checkbox" id="opt-dbs" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-2 border-gray-500 appearance-none cursor-pointer right-5 top-0.5"/>
+            <label for="opt-dbs" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-600 cursor-pointer"></label>
+        </div>
+    </div>
+
+    <div class="flex items-center justify-between mb-3">
+        <label class="text-sm text-gray-300">Lister les tables (--tables)</label>
+        <div class="relative inline-block w-10 align-middle select-none">
+            <input type="checkbox" id="opt-tables" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-2 border-gray-500 appearance-none cursor-pointer right-5 top-0.5"/>
+            <label for="opt-tables" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-600 cursor-pointer"></label>
+        </div>
+    </div>
+
+    <div class="flex items-center justify-between mb-3">
+        <label class="text-sm text-gray-300">Dump données (--dump)</label>
+        <div class="relative inline-block w-10 align-middle select-none">
+            <input type="checkbox" id="opt-dump" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-2 border-gray-500 appearance-none cursor-pointer right-5 top-0.5"/>
+            <label for="opt-dump" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-600 cursor-pointer"></label>
+        </div>
+    </div>
+
+    <div class="flex items-center justify-between mb-3">
+        <label class="text-sm text-gray-300">Utilisateurs DB (--users)</label>
+        <div class="relative inline-block w-10 align-middle select-none">
+            <input type="checkbox" id="opt-users" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-2 border-gray-500 appearance-none cursor-pointer right-5 top-0.5"/>
+            <label for="opt-users" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-600 cursor-pointer"></label>
+        </div>
+    </div>
+
+    <div class="flex items-center justify-between mb-4">
+        <label class="text-sm text-gray-300">Mots de passe (--passwords)</label>
+        <div class="relative inline-block w-10 align-middle select-none">
+            <input type="checkbox" id="opt-passwords" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-2 border-gray-500 appearance-none cursor-pointer right-5 top-0.5"/>
+            <label for="opt-passwords" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-600 cursor-pointer"></label>
+        </div>
+    </div>
+
+    <!-- EXPLOITATION -->
+    <h2 class="mb-3 text-xs font-bold text-gray-400 uppercase tracking-widest">💻 Exploitation</h2>
+
+    <!-- OS Command -->
+    <label class="text-sm text-gray-400">Commande système (--os-cmd)</label>
+    <div class="flex gap-2 mb-3">
+        <input id="os-cmd" class="flex-1 p-2 bg-gray-800 rounded text-sm" placeholder="whoami, id, ls /etc ...">
+        <button onclick="run('os-cmd')" class="bg-orange-600 hover:bg-orange-700 px-3 rounded text-sm font-bold">▶</button>
+    </div>
+
+    <!-- File Read -->
+    <label class="text-sm text-gray-400">Lire fichier (--file-read)</label>
+    <div class="flex gap-2 mb-3">
+        <input id="file-read" class="flex-1 p-2 bg-gray-800 rounded text-sm" placeholder="/etc/passwd">
+        <button onclick="run('file-read')" class="bg-cyan-600 hover:bg-cyan-700 px-3 rounded text-sm font-bold">▶</button>
+    </div>
+
+    <!-- File Write -->
+    <label class="text-sm text-gray-400">Écrire fichier (--file-write)</label>
+    <input id="file-write-src" class="w-full p-2 mb-1 bg-gray-800 rounded text-sm" placeholder="Chemin local source : C:\shell.php">
+    <input id="file-write-dest" class="w-full p-2 mb-1 bg-gray-800 rounded text-sm" placeholder="Destination serveur : /var/www/shell.php">
+    <button onclick="run('file-write')" class="bg-red-700 hover:bg-red-800 p-2 rounded w-full text-sm font-bold mb-3">✍️ Écrire fichier</button>
+
+    <!-- SQL Query -->
+    <label class="text-sm text-gray-400">Requête SQL custom (--sql-query)</label>
+    <div class="flex gap-2 mb-3">
+        <input id="sql-query" class="flex-1 p-2 bg-gray-800 rounded text-sm" placeholder="SELECT user,password FROM mysql.user">
+        <button onclick="run('sql-query')" class="bg-violet-600 hover:bg-violet-700 px-3 rounded text-sm font-bold">▶</button>
+    </div>
+
+    <!-- Schema -->
+    <button onclick="run('schema')" class="bg-teal-600 hover:bg-teal-700 p-2 rounded w-full text-sm font-bold mb-4">
+        🔬 Schema complet (--schema)
+    </button>
+
+    <!-- ANONYMAT -->
+    <h2 class="mb-2 text-xs font-bold text-gray-400 uppercase tracking-widest">🕵️ Anonymat</h2>
+    <label class="text-sm text-gray-400">Proxy</label>
+    <input id="proxy" class="w-full p-2 mb-4 bg-gray-800 rounded text-sm" placeholder="http://127.0.0.1:8080">
+
+    <!-- BOUTONS PRINCIPAUX -->
+    <div class="grid grid-cols-2 gap-2 mt-2">
+        <button onclick="run('scan')"    class="bg-blue-600 hover:bg-blue-700 p-2 rounded text-sm font-bold">🔍 Scan</button>
+        <button onclick="run('exploit')" class="bg-red-600 hover:bg-red-700 p-2 rounded text-sm font-bold">💥 Exploit</button>
+        <button onclick="run('dbs')"     class="bg-purple-600 hover:bg-purple-700 p-2 rounded text-sm font-bold">🗄️ DBs</button>
+        <button onclick="run('dump')"    class="bg-yellow-600 hover:bg-yellow-700 p-2 rounded text-sm font-bold">📤 Dump</button>
+        <button onclick="run('tables')"  class="bg-green-600 hover:bg-green-700 p-2 rounded text-sm font-bold">📋 Tables</button>
+        <button onclick="run('columns')" class="bg-pink-600 hover:bg-pink-700 p-2 rounded text-sm font-bold">📊 Colonnes</button>
+    </div>
+</div>
+
+<!-- Main -->
+<div class="flex-1 p-6 overflow-y-auto">
+
+    <!-- Stats -->
+    <div class="grid grid-cols-4 gap-4 mb-6">
+        <div class="bg-gray-800 p-4 rounded">Scans<br><span id="stat-scan" class="text-white font-bold text-xl">0</span></div>
+        <div class="bg-gray-800 p-4 rounded">Vulnérabilités<br><span id="stat-vuln" class="text-red-400 font-bold text-xl">0</span></div>
+        <div class="bg-gray-800 p-4 rounded">Terminés<br><span id="stat-done" class="text-green-400 font-bold text-xl">0</span></div>
+        <div class="bg-gray-800 p-4 rounded">En cours<br><span id="stat-run" class="text-yellow-400 font-bold text-xl">0</span></div>
+    </div>
+
+    <!-- Console -->
+    <div class="bg-black p-4 rounded h-72 overflow-y-auto mb-4">
+        <pre id="output" class="text-green-400 text-sm whitespace-pre-wrap">[ Console prête... ]</pre>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="w-full bg-gray-700 rounded h-4 mb-4">
+        <div id="progress-bar" class="bg-green-500 h-4 rounded transition-all duration-300" style="width:0%"></div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="bg-gray-800 p-4 rounded">
+        <div class="flex gap-4 mb-4 border-b border-gray-600 pb-2">
+            <button onclick="showTab('results')" class="text-green-400 font-bold text-sm">Résultats</button>
+            <button onclick="showTab('history')" class="text-gray-400 hover:text-white text-sm">Historique</button>
+            <button onclick="showTab('command')" class="text-gray-400 hover:text-white text-sm">Commande</button>
+        </div>
+
+        <div id="results" class="text-sm text-gray-300">Aucun résultat...</div>
+
+        <div id="history" class="hidden">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="text-left border-b border-gray-600 text-gray-400">
+                        <th class="pb-2">URL</th>
+                        <th class="pb-2">Status</th>
+                        <th class="pb-2">Vulns</th>
+                        <th class="pb-2">Durée</th>
+                        <th class="pb-2">Date</th>
+                    </tr>
+                </thead>
+                <tbody id="history-body"></tbody>
+            </table>
+        </div>
+
+        <div id="command" class="hidden">
+            <pre id="cmd-output" class="text-blue-400 text-sm whitespace-pre-wrap">Commande SQLmap générée ici...</pre>
+        </div>
+    </div>
+</div>
+</div>
+
+<script>
+function showTab(tab){
+    ['results','history','command'].forEach(t => {
+        document.getElementById(t).classList.add('hidden');
+    });
+    document.getElementById(tab).classList.remove('hidden');
+}
+
+function run(action){
+    let url       = document.getElementById('url').value.trim();
+    let level     = document.getElementById('level').value;
+    let risk      = document.getElementById('risk').value;
+    let technique = document.getElementById('technique').value;
+    let cookie    = document.getElementById('cookie').value.trim();
+    let proxy     = document.getElementById('proxy').value.trim();
+    let output    = document.getElementById("output");
+
+    if(!url){
+        output.innerText = "❌ Veuillez entrer une URL cible !";
+        return;
+    }
+
+    let extraFlags = [];
+
+    if(action === "scan"){
+        if(document.getElementById('opt-dbs').checked)       extraFlags.push("--dbs");
+        if(document.getElementById('opt-tables').checked)    extraFlags.push("--tables");
+        if(document.getElementById('opt-dump').checked)      extraFlags.push("--dump");
+        if(document.getElementById('opt-users').checked)     extraFlags.push("--users");
+        if(document.getElementById('opt-passwords').checked) extraFlags.push("--passwords");
+
+    } else if(action === "dbs"){
+        extraFlags.push("--dbs");
+
+    } else if(action === "tables"){
+        let db = prompt("📂 Nom de la base de données :") || "";
+        if(!db){ output.innerText += "❌ Base de données requise.\n"; return; }
+        extraFlags.push("--tables", "-D", db);
+
+    } else if(action === "columns"){
+        let db    = prompt("📂 Nom de la base de données :") || "";
+        let table = prompt("📋 Nom de la table :") || "";
+        if(!db || !table){ output.innerText += "❌ DB et Table requis.\n"; return; }
+        extraFlags.push("--columns", "-D", db, "-T", table);
+
+    } else if(action === "dump"){
+        let db    = prompt("📂 Nom de la base de données :") || "";
+        let table = prompt("📋 Nom de la table (vide = tout dumper) :") || "";
+        if(table){
+            extraFlags.push("--dump", "-D", db, "-T", table);
+        } else {
+            extraFlags.push("--dump-all");
+        }
+
+    } else if(action === "exploit"){
+        extraFlags.push("--os-shell");
+
+    // ✅ NOUVELLES FONCTIONNALITÉS
+
+    } else if(action === "os-cmd"){
+        let cmd = document.getElementById('os-cmd').value.trim();
+        if(!cmd){
+            output.innerText = "❌ Entre une commande système (ex: whoami) !";
+            return;
+        }
+        extraFlags.push(`--os-cmd="${cmd}"`);
+
+    } else if(action === "file-read"){
+        let file = document.getElementById('file-read').value.trim();
+        if(!file){
+            output.innerText = "❌ Entre un chemin de fichier (ex: /etc/passwd) !";
+            return;
+        }
+        extraFlags.push(`--file-read="${file}"`);
+
+    } else if(action === "file-write"){
+        let src  = document.getElementById('file-write-src').value.trim();
+        let dest = document.getElementById('file-write-dest').value.trim();
+        if(!src || !dest){
+            output.innerText = "❌ Entre le chemin source ET destination !";
+            return;
+        }
+        extraFlags.push(`--file-write="${src}"`, `--file-dest="${dest}"`);
+
+    } else if(action === "sql-query"){
+        let query = document.getElementById('sql-query').value.trim();
+        if(!query){
+            output.innerText = "❌ Entre une requête SQL !";
+            return;
+        }
+        extraFlags.push(`--sql-query="${query}"`);
+
+    } else if(action === "schema"){
+        extraFlags.push("--schema");
+    }
+
+    let extra = extraFlags.join(" ");
+
+    // Commande affichée
+    let cmd = `sqlmap -u "${url}" --level=${level} --risk=${risk} --technique=${technique} --batch`;
+    if(cookie) cmd += ` --cookie="${cookie}"`;
+    if(proxy)  cmd += ` --proxy="${proxy}"`;
+    if(extra)  cmd += ` ${extra}`;
+    document.getElementById('cmd-output').innerText = cmd;
+
+    // Reset console
+    output.innerText = `[+] Lancement : ${action.toUpperCase()}...\n`;
+    document.getElementById("progress-bar").style.width = "0%";
+    document.getElementById("stat-scan").innerText =
+        parseInt(document.getElementById("stat-scan").innerText) + 1;
+    document.getElementById("stat-run").innerText = "1";
+
+    // Fake progress
+    let fake = 0;
+    let interval = setInterval(() => {
+        if(fake < 90){ fake += 3; document.getElementById("progress-bar").style.width = fake + "%"; }
+    }, 800);
+
+    // Appel backend
+    const params = new URLSearchParams({
+        url, level, risk, technique,
+        cookie: cookie || "",
+        extra:  extra  || "",
+        proxy:  proxy  || ""
+    });
+
+    const eventSource = new EventSource(`/scan-live/?${params.toString()}`);
+
+    eventSource.onmessage = function(event){
+        const line = event.data;
+        output.innerText += line + "\n";
+        output.parentElement.scrollTop = output.parentElement.scrollHeight;
+
+        let match = line.match(/\[(\d+)%\]/);
+        if(match) document.getElementById("progress-bar").style.width = match[1] + "%";
+
+        if(line.toLowerCase().includes("is vulnerable") || line.includes("sql injection")){
+            output.innerText += "\n🔥 VULNERABILITY FOUND!\n";
+            document.getElementById("stat-vuln").innerText =
+                parseInt(document.getElementById("stat-vuln").innerText) + 1;
+        }
+
+        if(line.includes("Scan finished")){
+            clearInterval(interval);
+            document.getElementById("progress-bar").style.width = "100%";
+            document.getElementById("stat-done").innerText =
+                parseInt(document.getElementById("stat-done").innerText) + 1;
+            document.getElementById("stat-run").innerText = "0";
+
+            // Ajouter à l'historique
+            let tbody = document.getElementById('history-body');
+            let date  = new Date().toLocaleString();
+            tbody.innerHTML += `
+                <tr class="border-b border-gray-700">
+                    <td class="py-1 text-xs">${url}</td>
+                    <td class="text-green-400 py-1 text-xs">Terminé</td>
+                    <td class="py-1 text-xs">${document.getElementById('stat-vuln').innerText}</td>
+                    <td class="py-1 text-xs">-</td>
+                    <td class="py-1 text-xs">${date}</td>
+                </tr>`;
+            eventSource.close();
+        }
+    };
+
+    eventSource.onerror = function(){
+        clearInterval(interval);
+        document.getElementById("progress-bar").style.width = "100%";
+        document.getElementById("stat-run").innerText = "0";
+        eventSource.close();
+    };
+}
+</script>
+</body>
+</html>

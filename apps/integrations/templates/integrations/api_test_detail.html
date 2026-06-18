@@ -1,0 +1,75 @@
+{% extends "integrations/base.html" %}
+
+{% block content %}
+<div class="detail-header">
+    <a href="{% url 'integrations:api_security' %}" class="btn btn-sm btn-outline-primary mb-3"><i class="fa-solid fa-arrow-left"></i> Retour</a>
+    <h1><i class="fa-solid fa-shield"></i> Détail du test API</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header"><h5>Informations du test</h5></div>
+            <div class="card-body">
+                <p><strong>URL API:</strong> <code>{{ test.api_url }}</code></p>
+                <p><strong>Type:</strong> <span class="badge bg-info">{{ test.get_test_type_display }}</span></p>
+                <p><strong>Statut:</strong> <span class="status-{{ test.status }}">{{ test.get_status_display }}</span></p>
+                <p><strong>Vulnérable:</strong> 
+                    {% if test.vulnerable %}
+                    <span class="badge badge-high"><i class="fa-solid fa-exclamation-triangle"></i> OUI</span>
+                    {% else %}
+                    <span class="badge bg-success"><i class="fa-solid fa-check-circle"></i> NON</span>
+                    {% endif %}
+                </p>
+                <p><strong>Problèmes trouvés:</strong> <span class="badge bg-warning" style="font-size: 1.1rem;">{{ test.issues_found }}</span></p>
+                <p><strong>Durée:</strong> {{ test.duration }}s</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header"><h5><i class="fa-solid fa-lightbulb"></i> Recommandations</h5></div>
+            <div class="card-body">
+                {% if test.recommendations %}
+                <ul class="vulnerability-list">
+                    {% for rec in test.recommendations %}
+                    <li><i class="fa-solid fa-arrow-right"></i> {{ rec }}</li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-muted"><i class="fa-solid fa-check-circle"></i> Aucune recommandation</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header"><h5><i class="fa-solid fa-magnifying-glass"></i> Détails du test</h5></div>
+    <div class="card-body">
+        {% if test.test_details %}
+        <div class="row">
+            {% for key, value in test.test_details.items %}
+            <div class="col-md-6 mb-3">
+                <div class="metric-card">
+                    <div class="metric-label">{{ key|title }}</div>
+                    <div class="metric-value" style="font-size: 1.5rem; color: var(--primary);">
+                        {% if value == True %}
+                            <i class="fa-solid fa-check" style="color: #10b981;"></i>
+                        {% elif value == False %}
+                            <i class="fa-solid fa-xmark" style="color: #ef4444;"></i>
+                        {% else %}
+                            {{ value }}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-muted"><i class="fa-solid fa-info-circle"></i> Pas de détails disponibles</p>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,391 @@
+{% extends 'my_app/base.html' %}
+
+{% block title %}Scan #{{ scan.pk }} — NIKTO_SCAN{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* meta grid */
+  .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+  .meta-cell {
+    background: var(--panel);
+    padding: 1.2rem 1.4rem;
+  }
+  .meta-cell-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text3);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .meta-cell-value {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--text);
+    word-break: break-all;
+  }
+  .meta-cell-value.accent  { color: var(--accent); }
+  .meta-cell-value.success { color: var(--accent2); }
+  .meta-cell-value.danger  { color: var(--danger); }
+
+  /* findings */
+  .findings-panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+  }
+  .findings-panel::before {
+    content: '';
+    display: block;
+    height: 2px;
+    background: linear-gradient(90deg, var(--danger) 0%, var(--warn) 50%, transparent 100%);
+  }
+
+  .findings-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.4rem;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: .8rem;
+  }
+
+  .findings-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text2);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .findings-title::before {
+    content: '';
+    width: 8px; height: 8px;
+    border: 1px solid var(--danger);
+    transform: rotate(45deg);
+    display: inline-block;
+  }
+
+  .findings-count {
+    font-family: var(--mono);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--danger);
+  }
+
+  .finding-row {
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 1.4rem;
+    display: grid;
+    grid-template-columns: 80px 80px 1fr;
+    gap: 1rem;
+    align-items: start;
+    transition: background .15s;
+  }
+  .finding-row:last-child { border-bottom: none; }
+  .finding-row:hover { background: rgba(255,59,92,.03); }
+
+  .finding-osvdb {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text3);
+    letter-spacing: .5px;
+    padding-top: 2px;
+  }
+
+  .finding-method {
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+  .method-GET    { color: var(--accent2); }
+  .method-POST   { color: var(--warn); }
+  .method-PUT    { color: #b388ff; }
+  .method-DELETE { color: var(--danger); }
+
+  .finding-body {}
+  .finding-url {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    margin-bottom: 4px;
+    word-break: break-all;
+  }
+  .finding-msg {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  .no-findings {
+    text-align: center;
+    padding: 3rem 1rem;
+    font-family: var(--mono);
+    color: var(--accent2);
+  }
+  .no-findings .icon { font-size: 32px; margin-bottom: 1rem; }
+
+  /* raw output */
+  .raw-output-panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 1.5rem;
+  }
+  .raw-output-panel::before {
+    content: '';
+    display: block;
+    height: 2px;
+    background: linear-gradient(90deg, var(--text3) 0%, transparent 60%);
+  }
+
+  .raw-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.4rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text2);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: color .15s;
+  }
+  .raw-toggle:hover { color: var(--text); }
+  .raw-toggle .arrow { transition: transform .2s; }
+  .raw-toggle.open .arrow { transform: rotate(180deg); }
+
+  .raw-content {
+    display: none;
+    padding: 0 1.4rem 1.4rem;
+  }
+  .raw-content.visible { display: block; }
+
+  pre.raw-pre {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 1rem;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text2);
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+    line-height: 1.6;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  /* error box */
+  .error-box {
+    background: rgba(255,59,92,.07);
+    border: 1px solid rgba(255,59,92,.3);
+    border-radius: 4px;
+    padding: 1rem 1.4rem;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--danger);
+    margin-bottom: 1.5rem;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .error-box::before { content: '✗'; font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+  /* breadcrumb */
+  .breadcrumb {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .breadcrumb a { color: var(--text2); text-decoration: none; }
+  .breadcrumb a:hover { color: var(--accent); }
+  .breadcrumb .sep { color: var(--text3); }
+
+  @media (max-width: 768px) {
+    .meta-grid { grid-template-columns: 1fr 1fr; }
+    .finding-row { grid-template-columns: 1fr; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Breadcrumb -->
+<div class="breadcrumb animate-in">
+  <a href="{% url 'dashboard' %}">Dashboard</a>
+  <span class="sep">/</span>
+  <a href="{% url 'scan_list' %}">Scans</a>
+  <span class="sep">/</span>
+  <span style="color:var(--accent);">#{{ scan.pk|stringformat:"04d" }}</span>
+</div>
+
+<!-- Header -->
+<div class="page-header animate-in">
+  <div>
+    <h1>Scan #{{ scan.pk|stringformat:"04d" }}</h1>
+    <p class="page-subtitle">// {{ scan.target }}</p>
+  </div>
+  <div class="flex gap-2 items-center">
+    <a href="{% url 'scan_list' %}" class="btn btn-ghost">← Retour</a>
+    <a href="{% url 'scan_delete' scan.pk %}"
+      class="btn btn-danger"
+      onclick="return confirm('Supprimer ce scan définitivement ?')">✕ Supprimer</a>
+  </div>
+</div>
+
+<!-- Error -->
+{% if not scan.success %}
+<div class="error-box animate-in">
+  {{ scan.error_message|default:"Une erreur est survenue lors du scan." }}
+</div>
+{% endif %}
+
+<!-- Meta -->
+<div class="meta-grid animate-in delay-1">
+  <div class="meta-cell">
+    <div class="meta-cell-label">Cible</div>
+    <div class="meta-cell-value accent">{{ scan.target }}</div>
+  </div>
+  <div class="meta-cell">
+    <div class="meta-cell-label">Statut</div>
+    <div class="meta-cell-value {% if scan.success %}success{% else %}danger{% endif %}">
+      {% if scan.success %}✓ SUCCÈS{% else %}✗ ÉCHEC{% endif %}
+    </div>
+  </div>
+  <div class="meta-cell">
+    <div class="meta-cell-label">Vulnérabilités</div>
+    <div class="meta-cell-value {% if scan.findings_count > 0 %}danger{% else %}success{% endif %}">
+      {{ scan.findings_count|default:"0" }}
+    </div>
+  </div>
+  <div class="meta-cell">
+    <div class="meta-cell-label">Durée</div>
+    <div class="meta-cell-value">{{ scan.duration|default:"—" }}{% if scan.duration %}s{% endif %}</div>
+  </div>
+  <div class="meta-cell">
+    <div class="meta-cell-label">Démarré le</div>
+    <div class="meta-cell-value" style="font-size:12px;">{{ scan.started_at|date:"d/m/Y H:i:s"|default:"—" }}</div>
+  </div>
+  <div class="meta-cell">
+    <div class="meta-cell-label">Terminé le</div>
+    <div class="meta-cell-value" style="font-size:12px;">{{ scan.finished_at|date:"d/m/Y H:i:s"|default:"—" }}</div>
+  </div>
+  <div class="meta-cell">
+    <div class="meta-cell-label">Créé le</div>
+    <div class="meta-cell-value" style="font-size:12px;">{{ scan.created_at|date:"d/m/Y H:i:s" }}</div>
+  </div>
+  <div class="meta-cell">
+    <div class="meta-cell-label">ID</div>
+    <div class="meta-cell-value" style="color:var(--text3);">#{{ scan.pk }}</div>
+  </div>
+</div>
+
+<!-- Findings -->
+<div class="findings-panel animate-in delay-2">
+  <div class="findings-header">
+    <div class="findings-title">Vulnérabilités détectées</div>
+    <div class="flex items-center gap-2">
+      {% with count=scan.findings_count|default:0 %}
+        {% if count == 0 %}
+          <span class="badge badge-success">Aucune vulnérabilité</span>
+        {% elif count < 5 %}
+          <span class="badge badge-warn">{{ count }} trouvée(s)</span>
+        {% else %}
+          <span class="badge badge-danger">{{ count }} trouvée(s)</span>
+        {% endif %}
+      {% endwith %}
+    </div>
+  </div>
+
+  {% if findings %}
+    <!-- En-tête colonnes -->
+    <div style="display:grid;grid-template-columns:80px 80px 1fr;gap:1rem;padding:.6rem 1.4rem;border-bottom:1px solid var(--border);">
+      <span style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;">OSVDB</span>
+      <span style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;">Méthode</span>
+      <span style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;">Détail</span>
+    </div>
+
+    {% for finding in findings %}
+    <div class="finding-row">
+      <div class="finding-osvdb">
+        {% if finding.osvdb and finding.osvdb != 'N/A' %}
+          OSVDB-{{ finding.osvdb }}
+        {% else %}
+          —
+        {% endif %}
+      </div>
+
+      <div class="finding-method method-{{ finding.method|upper|default:'GET' }}">
+        {{ finding.method|upper|default:"GET" }}
+      </div>
+
+      <div class="finding-body">
+        {% if finding.url and finding.url != '/' %}
+          <div class="finding-url">{{ finding.url }}</div>
+        {% endif %}
+        <div class="finding-msg">{{ finding.msg }}</div>
+      </div>
+    </div>
+    {% endfor %}
+
+  {% else %}
+    <div class="no-findings">
+      <div class="icon">✓</div>
+      <div style="font-size:13px;letter-spacing:1px;">Aucune vulnérabilité détectée</div>
+      <div style="margin-top:.5rem;font-size:11px;color:var(--text3);">La cible semble propre selon les tests Nikto</div>
+    </div>
+  {% endif %}
+</div>
+
+<!-- Raw output -->
+{% if scan.raw_output %}
+<div class="raw-output-panel animate-in delay-3">
+  <button class="raw-toggle" id="raw-toggle">
+    <span>▸ Sortie brute Nikto</span>
+    <span class="arrow">▾</span>
+  </button>
+  <div class="raw-content" id="raw-content">
+    <pre class="raw-pre">{{ scan.raw_output }}</pre>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const toggle = document.getElementById('raw-toggle');
+  const content = document.getElementById('raw-content');
+  if (toggle && content) {
+    toggle.addEventListener('click', function() {
+      this.classList.toggle('open');
+      content.classList.toggle('visible');
+    });
+  }
+</script>
+{% endblock %}

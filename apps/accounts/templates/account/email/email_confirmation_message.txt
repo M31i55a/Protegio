@@ -1,0 +1,17 @@
+PROTEGIO - Email Verification
+
+Hello {{ user.email }},
+
+Thank you for signing up with PROTEGIO!
+
+To complete your account setup and verify your email address, please click the link below:
+
+{{ activate_url }}
+
+This link will expire in {{ expiration_days }} days.
+
+If you did not create this account, please ignore this email.
+
+---
+Best regards,
+PROTEGIO Security Team

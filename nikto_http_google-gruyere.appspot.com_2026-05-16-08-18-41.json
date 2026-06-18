@@ -1,0 +1,19 @@
+[
+   {
+      "end_time" : "2026-05-16 08:18:43 +0100",
+      "host" : "google-gruyere.appspot.com",
+      "ip" : "142.251.216.116",
+      "port" : "80",
+      "server_banner" : null,
+      "start_time" : "2026-05-16 08:18:43 +0100",
+      "vulnerabilities" : [
+         {
+            "id" : "FAIL",
+            "method" : "GET",
+            "msg" : "Unable to connect to google-gruyere.appspot.com:80.",
+            "references" : "",
+            "url" : "/"
+         }
+      ]
+   }
+]

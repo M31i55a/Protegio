@@ -1,0 +1,296 @@
+{% extends 'my_app/base.html' %}
+
+{% block title %}Dashboard — NIKTO_SCAN{% endblock %}
+
+{% block extra_css %}
+<style>
+  .stat-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.4rem 1.6rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color .2s;
+  }
+  .stat-card:hover { border-color: var(--border2); }
+  .stat-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; right: 0;
+    width: 60px; height: 60px;
+    border-radius: 50%;
+    opacity: .06;
+  }
+  .stat-card.c-cyan::after  { background: var(--accent); }
+  .stat-card.c-green::after { background: var(--accent2); }
+  .stat-card.c-red::after   { background: var(--danger); }
+  .stat-card.c-warn::after  { background: var(--warn); }
+
+  .stat-value {
+    font-family: var(--mono);
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .stat-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text3);
+  }
+  .stat-card.c-cyan  .stat-value { color: var(--accent); }
+  .stat-card.c-green .stat-value { color: var(--accent2); }
+  .stat-card.c-red   .stat-value { color: var(--danger); }
+  .stat-card.c-warn  .stat-value { color: var(--warn); }
+
+  /* scan form */
+  .scan-form-panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .scan-form-panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent) 0%, var(--accent2) 100%);
+  }
+
+  .target-input-wrap {
+    display: flex;
+    gap: .8rem;
+    align-items: stretch;
+  }
+  .target-input-wrap .form-input {
+    flex: 1;
+    font-size: 14px;
+    padding: 12px 16px;
+  }
+  .target-input-wrap .btn {
+    padding: 12px 28px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  .scan-hint {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+    margin-top: 8px;
+    display: flex;
+    gap: 16px;
+  }
+  .scan-hint span::before { content: '• '; }
+
+  /* recent scans mini list */
+  .recent-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    gap: 1rem;
+  }
+  .recent-row:last-child { border-bottom: none; }
+
+  .recent-target {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .recent-date {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+    white-space: nowrap;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    font-family: var(--mono);
+    color: var(--text3);
+    font-size: 12px;
+    letter-spacing: 1px;
+  }
+  .empty-state .empty-icon {
+    font-size: 32px;
+    margin-bottom: 1rem;
+    opacity: .4;
+  }
+
+  /* loading overlay */
+  .scan-loading {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    margin-top: 12px;
+  }
+  .scan-loading.visible { display: flex; }
+
+  .spinner {
+    width: 14px; height: 14px;
+    border: 2px solid rgba(0,229,255,0.2);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  .cursor-blink {
+    animation: blink 1s step-end infinite;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header animate-in">
+  <div>
+    <h1>Dashboard</h1>
+    <p class="page-subtitle">// Vue d'ensemble des opérations de scan</p>
+  </div>
+  <a href="{% url 'scan_list' %}" class="btn btn-ghost">Voir tous les scans →</a>
+</div>
+
+<!-- Stats -->
+<div class="grid-4 animate-in delay-1">
+  <div class="stat-card c-cyan">
+    <div class="stat-value">{{ total_scans|default:"0" }}</div>
+    <div class="stat-label">Scans totaux</div>
+  </div>
+  <div class="stat-card c-green">
+    <div class="stat-value">{{ scans_success|default:"0" }}</div>
+    <div class="stat-label">Terminés</div>
+  </div>
+  <div class="stat-card c-red">
+    <div class="stat-value">{{ total_findings|default:"0" }}</div>
+    <div class="stat-label">Vulnérabilités</div>
+  </div>
+  <div class="stat-card c-warn">
+    <div class="stat-value">{{ scans_failed|default:"0" }}</div>
+    <div class="stat-label">Échecs</div>
+  </div>
+</div>
+
+<!-- Scan form + recent -->
+<div class="grid-2 mt-3 animate-in delay-2">
+
+  <!-- Lancer un scan -->
+  <div class="scan-form-panel">
+    <div class="panel-title">Nouveau scan</div>
+    <form method="post" action="{% url 'scan_run' %}" id="scan-form">
+      {% csrf_token %}
+      <div class="form-group">
+        <label class="form-label" for="target">Cible</label>
+        <div class="target-input-wrap">
+          <input
+            type="text"
+            id="target"
+            name="target"
+            class="form-input"
+            placeholder="http://192.168.1.1 ou https://example.com"
+            required
+            autocomplete="off"
+          >
+          <button type="submit" class="btn btn-primary" id="scan-btn">
+            ▶ SCANNER
+          </button>
+        </div>
+        <div class="scan-hint">
+          <span>http:// ou https://</span>
+          <span>IP ou domaine</span>
+          <span>Port optionnel</span>
+        </div>
+      </div>
+
+      <!-- Options supplémentaires -->
+      <details style="margin-top:1rem;">
+        <summary style="font-family:var(--mono);font-size:11px;color:var(--text3);cursor:pointer;letter-spacing:1px;list-style:none;">
+          ▸ Options avancées
+        </summary>
+        <div style="margin-top:.8rem;">
+          <div class="form-group">
+            <label class="form-label" for="tuning">Tuning Nikto</label>
+            <select name="tuning" id="tuning" class="form-input" style="cursor:pointer;">
+              <option value="">Par défaut (tous les tests)</option>
+              <option value="1">1 — Fichiers intéressants</option>
+              <option value="2">2 — Mauvaise configuration</option>
+              <option value="4">4 — XSS injections</option>
+              <option value="8">8 — Injections de commandes</option>
+              <option value="9">9 — Injection SQL</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="port">Port (optionnel)</label>
+            <input type="number" name="port" id="port" class="form-input" placeholder="80" min="1" max="65535">
+          </div>
+        </div>
+      </details>
+    </form>
+
+    <div class="scan-loading" id="scan-loading">
+      <div class="spinner"></div>
+      <span>Scan en cours<span class="cursor-blink">_</span></span>
+    </div>
+  </div>
+
+  <!-- Scans récents -->
+  <div class="panel" style="padding:1.5rem;">
+    <div class="panel-title">Scans récents</div>
+
+    {% if recent_scans %}
+      {% for scan in recent_scans %}
+      <div class="recent-row">
+        <a href="{% url 'scan_detail' scan.pk %}" class="recent-target" title="{{ scan.target }}">
+          {{ scan.target|truncatechars:40 }}
+        </a>
+        {% if scan.success %}
+          <span class="badge badge-success">OK</span>
+        {% else %}
+          <span class="badge badge-danger">ERREUR</span>
+        {% endif %}
+        <span class="badge badge-neutral">{{ scan.findings_count|default:"0" }} vuln.</span>
+        <span class="recent-date">{{ scan.created_at|date:"d/m H:i" }}</span>
+      </div>
+      {% endfor %}
+      <div class="mt-2">
+        <a href="{% url 'scan_list' %}" class="btn btn-ghost" style="width:100%;justify-content:center;">
+          Voir tout l'historique
+        </a>
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <div class="empty-icon">◈</div>
+        <div>Aucun scan effectué</div>
+        <div style="margin-top:.5rem;color:var(--text3);">Lancez votre premier scan ci-contre</div>
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.getElementById('scan-form').addEventListener('submit', function() {
+    document.getElementById('scan-btn').disabled = true;
+    document.getElementById('scan-btn').textContent = '⏳ EN COURS...';
+    document.getElementById('scan-loading').classList.add('visible');
+  });
+</script>
+{% endblock %}

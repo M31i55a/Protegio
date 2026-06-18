@@ -1,0 +1,130 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}My Profile - PROTEGIO{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    <header class="page-header">
+        <div class="header-content">
+            <h1><i class="fas fa-user"></i> My Profile</h1>
+            <p>Manage your account settings</p>
+        </div>
+    </header>
+
+    <div class="content-area">
+        <div class="row">
+            <div class="col-md-8">
+                <!-- Profile Information Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-id-card"></i> User Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            <tr>
+                                <td><strong>Username:</strong></td>
+                                <td>{{ user.username }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Email:</strong></td>
+                                <td>{{ user.email }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Full Name:</strong></td>
+                                <td>{{ user.get_full_name|default:"Not set" }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Account Status:</strong></td>
+                                <td><span class="badge bg-success">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Member Since:</strong></td>
+                                <td>{{ user.date_joined|date:"M d, Y" }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Security Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-shield-alt"></i> Security</h5>
+                    </div>
+                    <div class="card-body">
+                        <button class="btn btn-primary" disabled>
+                            <i class="fas fa-key"></i> Change Password
+                        </button>
+                        <button class="btn btn-secondary" disabled>
+                            <i class="fas fa-mobile"></i> Two-Factor Authentication
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <!-- Stats Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-chart-bar"></i> Account Stats</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="stat-item">
+                            <span class="stat-label">Total Scans</span>
+                            <span class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Reports Created</span>
+                            <span class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Tasks Completed</span>
+                            <span class="stat-value">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        margin-bottom: 20px;
+        border-radius: 8px;
+    }
+
+    .card-header {
+        background: rgba(88, 166, 255, 0.05);
+        padding: 15px;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .card-header h5 {
+        margin: 0;
+        color: var(--text-main);
+        font-size: 1rem;
+    }
+
+    .stat-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .stat-item:last-child {
+        border-bottom: none;
+    }
+
+    .stat-label {
+        color: var(--text-muted);
+    }
+
+    .stat-value {
+        color: var(--primary);
+        font-weight: 600;
+    }
+</style>
+{% endblock %}

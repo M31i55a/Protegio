@@ -1,0 +1,256 @@
+{% extends "checker/base.html" %}
+{% block content %}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-7">
+
+            <div class="text-center mb-5 mt-5 pt-4">
+                <h1 class="main-title mb-3">Username Scanner</h1>
+                <p class="lead text-muted opacity-75">
+                    Vérifiez la présence d'un nom d'utilisateur sur +250 plateformes en quelques secondes
+                </p>
+            </div>
+
+            <div class="card border-0 shadow-lg overflow-hidden">
+                <div class="card-body p-4 p-md-5">
+                    <form id="search-form" class="search-form">
+                        {% csrf_token %}
+                        <div class="mb-4 position-relative">
+                            <label for="id_username" class="form-label fw-semibold">
+                                <i class="fas fa-user me-2"></i>Nom d'utilisateur à rechercher
+                            </label>
+                            <input 
+                                type="text" 
+                                name="username" 
+                                id="id_username" 
+                                class="form-control form-control-lg"
+                                placeholder="Entrez le username (ex: darkvador42)"
+                                required
+                                autofocus
+                                minlength="2"
+                            >
+                            <small class="text-muted d-block mt-2">
+                                <i class="fas fa-info-circle"></i> Recherche sensible à la casse
+                            </small>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg" id="search-btn">
+                                <span class="spinner-border spinner-border-sm me-2 d-none loading-spinner" role="status" aria-hidden="true" id="btn-spinner"></span>
+                                <i class="fas fa-search me-2 search-icon" id="search-icon"></i>
+                                <span class="button-text">Lancer la recherche</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Barre de progression -->
+            <div id="progress-section" style="display: none;" class="mt-4">
+                <div class="progress" style="height: 25px;">
+                    <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" 
+                         role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                        <span id="progress-text" style="color: white; font-weight: bold;">0%</span>
+                    </div>
+                </div>
+                <small class="text-muted mt-2 d-block">
+                    <i class="fas fa-spinner fa-spin"></i> Vérification en cours... <span id="progress-info">0/0</span>
+                </small>
+            </div>
+
+            <!-- Résultats en direct -->
+            <div id="live-results" style="display: none;" class="mt-4">
+                <h4 class="mb-3">Résultats trouvés en temps réel:</h4>
+                <ul id="live-results-list" class="list-group"></ul>
+            </div>
+
+            <!-- Petit texte légal ou info en bas -->
+            <p class="text-center text-muted mt-4 small fade-in">
+                <i class="fas fa-clock"></i> Les résultats s'affichent au fur et à mesure des vérifications
+            </p>
+
+            <!-- Stats de confiance -->
+            <div class="row mt-5 pt-5">
+                <div class="col-md-4 text-center fade-in" style="animation-delay: 0.1s;">
+                    <h3 class="h5 text-primary fw-bold">+250</h3>
+                    <p class="text-muted small">Plateformes supportées</p>
+                </div>
+                <div class="col-md-4 text-center fade-in" style="animation-delay: 0.2s;">
+                    <h3 class="h5 text-primary fw-bold">⚡ Rapide</h3>
+                    <p class="text-muted small">Requêtes parallèles</p>
+                </div>
+                <div class="col-md-4 text-center fade-in" style="animation-delay: 0.3s;">
+                    <h3 class="h5 text-primary fw-bold">100%</h3>
+                    <p class="text-muted small">Confidentiel</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    .main-title {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 3.2rem;
+        background: linear-gradient(135deg, #0066ff 0%, #0052cc 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: -1px;
+        animation: slideInDown 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes slideInDown {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+        transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        animation: slideInUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
+    }
+
+    @keyframes slideInUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0, 102, 255, 0.2);
+    }
+
+    .btn-lg {
+        padding: 0.75rem 2rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    .fade-in {
+        animation: fadeIn 0.8s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    #live-results {
+        animation: slideInUp 0.4s ease-out;
+    }
+
+    .list-group-item {
+        border-left: 4px solid #10b981;
+        animation: slideInUp 0.2s ease-out;
+    }
+
+    .list-group-item a {
+        color: #0066ff;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .list-group-item a:hover {
+        text-decoration: underline;
+    }
+
+    .progress {
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        transition: width 0.3s ease;
+    }
+</style>
+
+<script>
+document.getElementById('search-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const username = document.getElementById('id_username').value.trim();
+    
+    if (!username || username.length < 2) {
+        alert('Veuillez entrer un nom d\'utilisateur valide (min. 2 caractères)');
+        return;
+    }
+    
+    startSearch(username);
+});
+
+function startSearch(username) {
+    const searchBtn = document.getElementById('search-btn');
+    const btnSpinner = document.getElementById('btn-spinner');
+    const searchIcon = document.getElementById('search-icon');
+    const progressSection = document.getElementById('progress-section');
+    const liveResults = document.getElementById('live-results');
+    const liveResultsList = document.getElementById('live-results-list');
+    
+    // Désactiver le bouton
+    searchBtn.disabled = true;
+    btnSpinner.classList.remove('d-none');
+    searchIcon.classList.add('d-none');
+    
+    // Afficher la barre de progression
+    progressSection.style.display = 'block';
+    liveResults.style.display = 'block';
+    liveResultsList.innerHTML = '';
+    
+    let found = 0;
+    let total = 0;
+    
+    // Utiliser EventSource pour les updates en temps réel
+    const eventSource = new EventSource(`/checker/api/check-parallel/?username=${encodeURIComponent(username)}`);
+    
+    eventSource.addEventListener('message', function(event) {
+        const data = JSON.parse(event.data);
+        
+        if (data.type === 'completed') {
+            // Fermer la connexion
+            eventSource.close();
+            
+            // Mettre à jour l'interface
+            document.getElementById('progress-bar').style.width = '100%';
+            document.getElementById('progress-text').textContent = '100%';
+            document.getElementById('progress-info').textContent = `${data.total_results}/${data.total_results}`;
+            
+            // Rediriger vers la page de résultats
+            setTimeout(() => {
+                window.location.href = `/checker/results/?username=${encodeURIComponent(username)}`;
+            }, 1000);
+        } else if (data.type === 'result') {
+            const result = data.data;
+            const progress = data.progress;
+            
+            // Mettre à jour la barre de progression
+            document.getElementById('progress-bar').style.width = progress.percent + '%';
+            document.getElementById('progress-text').textContent = progress.percent + '%';
+            document.getElementById('progress-info').textContent = `${progress.completed}/${progress.total}`;
+            
+            // Ajouter le résultat à la liste en direct si trouvé
+            if (result.exists) {
+                found++;
+                const li = document.createElement('li');
+                li.className = 'list-group-item';
+                li.innerHTML = `<strong>${result.name}</strong> - <a href="${result.url}" target="_blank">Voir le profil</a>`;
+                liveResultsList.appendChild(li);
+            }
+        }
+    });
+    
+    eventSource.addEventListener('error', function(event) {
+        eventSource.close();
+        searchBtn.disabled = false;
+        btnSpinner.classList.add('d-none');
+        searchIcon.classList.remove('d-none');
+        alert('Une erreur s\'est produite lors de la recherche.');
+        progressSection.style.display = 'none';
+        liveResults.style.display = 'none';
+    });
+}
+</script>
+
+{% endblock %}

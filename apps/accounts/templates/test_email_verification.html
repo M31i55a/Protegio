@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Email Verification Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #0d1117; color: #c9d1d9; }
+        .container { max-width: 900px; margin: 0 auto; }
+        .user-card { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 20px; margin-bottom: 20px; }
+        .verified { color: #3fb950; font-weight: bold; }
+        .unverified { color: #f85149; font-weight: bold; }
+        .link { color: #58a6ff; text-decoration: none; }
+        .link:hover { text-decoration: underline; }
+        .code { background: #0d1117; border: 1px solid #30363d; padding: 10px; border-radius: 4px; font-family: monospace; font-size: 12px; overflow-x: auto; }
+        h1 { color: #58a6ff; }
+        h2 { color: #79c0ff; margin-top: 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📧 Email Verification Test</h1>
+        
+        {% if users %}
+            <p>Last 5 registered users:</p>
+            
+            {% for user in users %}
+                <div class="user-card">
+                    <h2>{{ user.username }}</h2>
+                    <p><strong>Email:</strong> {{ user.email }}</p>
+                    
+                    {% if user.email_address %}
+                        <p>
+                            <strong>Status:</strong>
+                            {% if user.email_address.verified %}
+                                <span class="verified">✅ VERIFIED</span>
+                            {% else %}
+                                <span class="unverified">❌ PENDING</span>
+                            {% endif %}
+                        </p>
+                        
+                        {% if user.confirmation %}
+                            <p>
+                                <strong>Confirmation Key:</strong><br>
+                                <code class="code">{{ user.confirmation.key }}</code>
+                            </p>
+                            <p>
+                                <strong>Verification Link:</strong><br>
+                                <a href="{{ user.verify_url }}" class="link" target="_blank">{{ user.verify_url }}</a>
+                            </p>
+                            <p style="font-size: 12px; color: #8b949e;">
+                                Created: {{ user.confirmation.created }}
+                            </p>
+                        {% else %}
+                            <p style="color: #f85149;">⚠️ No confirmation record found</p>
+                        {% endif %}
+                    {% else %}
+                        <p style="color: #f85149;">⚠️ No EmailAddress record found</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No users found in database.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

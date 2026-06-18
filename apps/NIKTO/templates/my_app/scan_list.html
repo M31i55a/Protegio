@@ -1,0 +1,312 @@
+{% extends 'my_app/base.html' %}
+
+{% block title %}Historique des scans — NIKTO_SCAN{% endblock %}
+
+{% block extra_css %}
+<style>
+  .filters-bar {
+    display: flex;
+    align-items: center;
+    gap: .8rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+
+  .filter-btn {
+    padding: 5px 14px;
+    border-radius: 2px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: 1px solid var(--border2);
+    background: transparent;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all .18s;
+    text-decoration: none;
+  }
+  .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .filter-btn.active { background: rgba(0,229,255,.08); border-color: var(--accent); color: var(--accent); }
+
+  .search-wrap {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+  .search-wrap .form-input {
+    width: 240px;
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  /* table */
+  .scan-table-wrap {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .scan-table-wrap::before {
+    content: '';
+    display: block;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent) 0%, transparent 60%);
+  }
+
+  .data-table .target-cell {
+    font-family: var(--mono);
+    color: var(--accent);
+    font-size: 12px;
+    max-width: 280px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .data-table .target-cell a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .data-table .target-cell a:hover { text-decoration: underline; }
+
+  .data-table .id-cell {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text3);
+    white-space: nowrap;
+  }
+
+  .vuln-count {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .vuln-count.high  { color: var(--danger); }
+  .vuln-count.med   { color: var(--warn); }
+  .vuln-count.low   { color: var(--accent2); }
+  .vuln-count.zero  { color: var(--text3); }
+
+  .actions-cell {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .action-link {
+    padding: 4px 10px;
+    border-radius: 2px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 1px solid var(--border2);
+    color: var(--text2);
+    transition: all .15s;
+    white-space: nowrap;
+  }
+  .action-link:hover { border-color: var(--accent); color: var(--accent); }
+  .action-link.del   { color: var(--text3); }
+  .action-link.del:hover { border-color: var(--danger); color: var(--danger); }
+
+  /* empty */
+  .empty-state {
+    text-align: center;
+    padding: 5rem 1rem;
+    font-family: var(--mono);
+    color: var(--text3);
+  }
+  .empty-state .empty-icon { font-size: 40px; margin-bottom: 1rem; opacity: .3; }
+  .empty-state h2 { font-size: 14px; letter-spacing: 2px; margin-bottom: .5rem; color: var(--text2); }
+
+  /* pagination */
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    margin-top: 1.5rem;
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+  .page-link {
+    padding: 5px 11px;
+    border: 1px solid var(--border2);
+    border-radius: 2px;
+    color: var(--text2);
+    text-decoration: none;
+    transition: all .15s;
+  }
+  .page-link:hover, .page-link.current {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(0,229,255,.06);
+  }
+  .page-link.disabled { opacity: .3; pointer-events: none; }
+
+  /* summary bar */
+  .summary-bar {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+    flex-wrap: wrap;
+  }
+  .summary-bar span strong { color: var(--text); margin-right: 4px; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header animate-in">
+  <div>
+    <h1>Historique des scans</h1>
+    <p class="page-subtitle">// Liste complète des scans Nikto effectués</p>
+  </div>
+  <a href="{% url 'dashboard' %}" class="btn btn-primary">▶ Nouveau scan</a>
+</div>
+
+<!-- Filtres -->
+<div class="filters-bar animate-in delay-1">
+  <a href="{% url 'scan_list' %}" class="filter-btn {% if not request.GET.status %}active{% endif %}">Tous</a>
+  <a href="?status=success" class="filter-btn {% if request.GET.status == 'success' %}active{% endif %}">Succès</a>
+  <a href="?status=failed"  class="filter-btn {% if request.GET.status == 'failed'  %}active{% endif %}">Échecs</a>
+  <a href="?status=vulns"   class="filter-btn {% if request.GET.status == 'vulns'   %}active{% endif %}">Avec vulnérabilités</a>
+
+  <form method="get" class="search-wrap">
+    {% if request.GET.status %}<input type="hidden" name="status" value="{{ request.GET.status }}">{% endif %}
+    <input
+      type="text"
+      name="q"
+      class="form-input"
+      placeholder="Rechercher une cible..."
+      value="{{ request.GET.q }}"
+      autocomplete="off"
+    >
+    <button type="submit" class="btn btn-ghost" style="padding:6px 14px;">🔍</button>
+  </form>
+</div>
+
+<!-- Table -->
+<div class="scan-table-wrap animate-in delay-2">
+
+  {% if scans %}
+  <div class="summary-bar">
+    <span><strong>{{ page_obj.paginator.count|default:scans|length }}</strong> scan(s)</span>
+    <span><strong>{{ total_findings|default:"—" }}</strong> vulnérabilité(s) détectée(s)</span>
+    {% if request.GET.q %}<span>Filtre : <strong style="color:var(--accent);">{{ request.GET.q }}</strong></span>{% endif %}
+  </div>
+
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Cible</th>
+        <th>Statut</th>
+        <th>Vulnérabilités</th>
+        <th>Durée</th>
+        <th>Date</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for scan in scans %}
+      <tr>
+        <td class="id-cell">#{{ scan.pk|stringformat:"04d" }}</td>
+
+        <td class="target-cell">
+          <a href="{% url 'scan_detail' scan.pk %}">{{ scan.target }}</a>
+        </td>
+
+        <td>
+          {% if scan.success %}
+            <span class="badge badge-success">✓ OK</span>
+          {% else %}
+            <span class="badge badge-danger">✗ ERREUR</span>
+          {% endif %}
+        </td>
+
+        <td>
+          {% with count=scan.findings_count|default:0 %}
+            {% if count == 0 %}
+              <span class="vuln-count zero">—</span>
+            {% elif count < 5 %}
+              <span class="vuln-count low">{{ count }}</span>
+            {% elif count < 15 %}
+              <span class="vuln-count med">{{ count }}</span>
+            {% else %}
+              <span class="vuln-count high">{{ count }}</span>
+            {% endif %}
+          {% endwith %}
+        </td>
+
+        <td>
+          <span class="mono" style="font-size:11px;color:var(--text2);">
+            {% if scan.duration %}{{ scan.duration }}s{% else %}—{% endif %}
+          </span>
+        </td>
+
+        <td>
+          <span class="mono" style="font-size:11px;color:var(--text2);">
+            {{ scan.created_at|date:"d/m/Y H:i" }}
+          </span>
+        </td>
+
+        <td>
+          <div class="actions-cell">
+            <a href="{% url 'scan_detail' scan.pk %}" class="action-link">Détails</a>
+            <a href="{% url 'scan_delete' scan.pk %}" class="action-link del"
+               onclick="return confirm('Supprimer ce scan ?')">✕</a>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- Pagination -->
+  {% if page_obj.has_other_pages %}
+  <div class="pagination">
+    {% if page_obj.has_previous %}
+      <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">← Préc.</a>
+    {% else %}
+      <span class="page-link disabled">← Préc.</span>
+    {% endif %}
+
+    {% for num in page_obj.paginator.page_range %}
+      {% if page_obj.number == num %}
+        <span class="page-link current">{{ num }}</span>
+      {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+        <a class="page-link" href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">{{ num }}</a>
+      {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+      <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">Suiv. →</a>
+    {% else %}
+      <span class="page-link disabled">Suiv. →</span>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon">◈</div>
+    <h2>Aucun scan trouvé</h2>
+    <p>{% if request.GET.q %}Aucun résultat pour "{{ request.GET.q }}"{% else %}Lancez votre premier scan depuis le dashboard{% endif %}</p>
+    <div class="mt-2">
+      <a href="{% url 'dashboard' %}" class="btn btn-primary">▶ Nouveau scan</a>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+
+{% endblock %}

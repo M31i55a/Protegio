@@ -1,0 +1,128 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Scan History - PROTEGIO{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    <header class="page-header">
+        <div class="header-content">
+            <h1><i class="fas fa-history"></i> Scan History</h1>
+            <p>Your recent scans and results</p>
+        </div>
+    </header>
+
+    <div class="content-area">
+        <div class="card">
+            <div class="card-header">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h5 style="margin: 0;"><i class="fas fa-tasks"></i> All Scans</h5>
+                    <input type="search" placeholder="Search scans..." class="form-control" style="width: auto; max-width: 300px;">
+                </div>
+            </div>
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Scan ID</th>
+                            <th>Type</th>
+                            <th>Target</th>
+                            <th>Started</th>
+                            <th>Status</th>
+                            <th>Results</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#SCAN-001</td>
+                            <td><span class="badge bg-primary">Network Scan</span></td>
+                            <td>192.168.1.0/24</td>
+                            <td>Today at 10:00 AM</td>
+                            <td><span class="badge bg-success">Completed</span></td>
+                            <td><button class="btn btn-sm btn-outline-primary">View</button></td>
+                        </tr>
+                        <tr>
+                            <td>#SCAN-002</td>
+                            <td><span class="badge bg-info">DNS Scan</span></td>
+                            <td>example.com</td>
+                            <td>Yesterday at 2:30 PM</td>
+                            <td><span class="badge bg-success">Completed</span></td>
+                            <td><button class="btn btn-sm btn-outline-primary">View</button></td>
+                        </tr>
+                        <tr>
+                            <td>#SCAN-003</td>
+                            <td><span class="badge bg-warning">Port Scan</span></td>
+                            <td>10.0.0.1</td>
+                            <td>2 days ago</td>
+                            <td><span class="badge bg-danger">Failed</span></td>
+                            <td><button class="btn btn-sm btn-outline-primary">View</button></td>
+                        </tr>
+                        <tr>
+                            <td>#SCAN-004</td>
+                            <td><span class="badge bg-secondary">Security Scan</span></td>
+                            <td>test.local</td>
+                            <td>3 days ago</td>
+                            <td><span class="badge bg-warning">Running</span></td>
+                            <td><button class="btn btn-sm btn-outline-primary">View</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+    }
+
+    .card-header {
+        background: rgba(88, 166, 255, 0.05);
+        padding: 15px;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .card-header h5 {
+        margin: 0;
+        color: var(--text-main);
+    }
+
+    .table {
+        color: var(--text-main);
+    }
+
+    .table thead {
+        border-top: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .table th {
+        color: var(--text-muted);
+        font-weight: 600;
+        border: none;
+    }
+
+    .table td {
+        border-top: 1px solid var(--border-color);
+        vertical-align: middle;
+    }
+
+    .table tbody tr:hover {
+        background: rgba(88, 166, 255, 0.05);
+    }
+
+    .form-control {
+        background: #0d1117;
+        border: 1px solid var(--border-color);
+        color: var(--text-main);
+    }
+
+    .form-control:focus {
+        background: #0d1117;
+        border-color: var(--primary);
+        color: var(--text-main);
+    }
+</style>
+{% endblock %}

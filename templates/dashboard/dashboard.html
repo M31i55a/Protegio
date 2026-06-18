@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PROTEGIO — Security Intelligence Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --ink:#060912;
+  --ink2:#0D1220;
+  --ink3:#141928;
+  --surface:#111827;
+  --surface2:#1A2235;
+  --border:rgba(255,255,255,0.07);
+  --border2:rgba(255,255,255,0.12);
+  --t1:#F0F4FF;
+  --t2:#8B95B0;
+  --t3:#4A5268;
+  --a:#3B82F6;
+  --a2:#2563EB;
+  --a3:#60A5FA;
+  --aL:rgba(59,130,246,0.12);
+  --aG:rgba(59,130,246,0.06);
+  --green:#10B981;
+  --greenL:rgba(16,185,129,0.12);
+  --red:#EF4444;
+  --redL:rgba(239,68,68,0.12);
+  --amber:#F59E0B;
+  --amberL:rgba(245,158,11,0.12);
+  --purple:#8B5CF6;
+  --purpleL:rgba(139,92,246,0.12);
+  /* Categories */
+  --c-integ:#3B82F6;
+  --c-recon:#10B981;
+  --c-scan:#F59E0B;
+  --c-exploit:#EF4444;
+}
+html,body{height:100%;overflow-x:hidden;}
+body{font-family:'Outfit',sans-serif;background:var(--ink);color:var(--t1);}
+
+/* ══════════════════════════════════════
+   SCROLLBAR
+══════════════════════════════════════ */
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px;}
+
+/* ══════════════════════════════════════
+   PAGE SYSTEM
+══════════════════════════════════════ */
+.page{display:none;min-height:100vh;}
+.page.active{display:flex;flex-direction:column;}
+
+/* ══════════════════════════════════════
+   LANDING PAGE
+══════════════════════════════════════ */
+#landing{position:relative;overflow:hidden;}
+
+/* Animated background grid */
+.bg-grid{
+  position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(59,130,246,0.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(59,130,246,0.04) 1px,transparent 1px);
+  background-size:60px 60px;
+  animation:gridMove 20s linear infinite;
+  pointer-events:none;z-index:0;
+}
+@keyframes gridMove{
+  0%{background-position:0 0;}
+  100%{background-position:60px 60px;}
+}
+
+/* Glow orbs */
+.orb{
+  position:fixed;border-radius:50%;pointer-events:none;
+  filter:blur(80px);animation:orbFloat 8s ease-in-out infinite;
+}
+.orb1{width:500px;height:500px;background:rgba(59,130,246,0.08);top:-100px;right:-100px;animation-delay:0s;}
+.orb2{width:400px;height:400px;background:rgba(139,92,246,0.06);bottom:100px;left:-100px;animation-delay:3s;}
+.orb3{width:300px;height:300px;background:rgba(16,185,129,0.05);top:50%;left:50%;animation-delay:6s;}
+@keyframes orbFloat{
+  0%,100%{transform:translateY(0) scale(1);}
+  50%{transform:translateY(-30px) scale(1.05);}
+}
+
+/* WATERMARK */
+.watermark{
+  position:fixed;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  font-family:'Bebas Neue',sans-serif;
+  font-size:22vw;
+  letter-spacing:0.05em;
+  color:transparent;
+  -webkit-text-stroke:1px rgba(59,130,246,0.06);
+  pointer-events:none;
+  white-space:nowrap;
+  user-select:none;
+  z-index:0;
+  animation:wmBreath 6s ease-in-out infinite;
+}
+@keyframes wmBreath{
+  0%,100%{-webkit-text-stroke:1px rgba(59,130,246,0.06);}
+  50%{-webkit-text-stroke:1px rgba(59,130,246,0.10);}
+}
+
+/* ── NAVBAR ─────────────────────────── */
+.navbar{
+  position:fixed;top:0;left:0;right:0;
+  height:72px;
+  display:flex;align-items:center;
+  padding:0 48px;
+  background:rgba(6,9,18,0.8);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  z-index:100;
+}
+.nav-logo{
+  display:flex;align-items:center;gap:12px;
+  font-family:'Bebas Neue',sans-serif;
+  font-size:26px;
+  letter-spacing:0.1em;
+  color:var(--t1);
+  text-decoration:none;
+}
+.nav-shield{
+  width:36px;height:36px;
+  background:var(--a);
+  border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+  box-shadow:0 0 20px rgba(59,130,246,0.4);
+}
+.nav-shield::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,0.2),transparent);
+}
+.nav-shield svg{width:18px;height:18px;fill:white;position:relative;z-index:1;display:block;}
+.nav-spacer{flex:1;}
+.nav-links{display:flex;align-items:center;gap:8px;}
+.nav-link{
+  padding:8px 18px;border-radius:8px;
+  font-size:14px;font-weight:500;color:var(--t2);
+  cursor:pointer;transition:all 0.2s;text-decoration:none;
+}
+.nav-link:hover{color:var(--t1);background:rgba(255,255,255,0.05);}
+.btn-connect{
+  padding:10px 24px;border-radius:10px;
+  font-size:14px;font-weight:700;
+  background:var(--a);color:white;
+  border:none;cursor:pointer;
+  transition:all 0.2s;
+  box-shadow:0 4px 16px rgba(59,130,246,0.35);
+  font-family:'Outfit',sans-serif;
+  letter-spacing:0.02em;
+  position:relative;overflow:hidden;
+}
+.btn-connect::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,0.15),transparent);
+}
+.btn-connect:hover{
+  background:var(--a2);
+  transform:translateY(-1px);
+  box-shadow:0 6px 24px rgba(59,130,246,0.5);
+}
+
+/* ── HERO ───────────────────────────── */
+.hero{
+  position:relative;z-index:1;
+  padding:160px 48px 80px;
+  text-align:center;
+  max-width:900px;
+  margin:0 auto;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:6px 16px;border-radius:99px;
+  background:var(--aL);border:1px solid rgba(59,130,246,0.2);
+  font-size:12px;font-weight:600;color:var(--a3);
+  letter-spacing:0.1em;text-transform:uppercase;
+  margin-bottom:28px;
+  animation:fadeUp 0.6s ease both;
+}
+.hero-badge-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--a);
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(59,130,246,0.4);}
+  50%{box-shadow:0 0 0 6px rgba(59,130,246,0);}
+}
+.hero-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(56px,8vw,96px);
+  letter-spacing:0.04em;
+  line-height:0.95;
+  color:var(--t1);
+  margin-bottom:24px;
+  animation:fadeUp 0.6s 0.1s ease both;
+}
+.hero-title span{
+  color:transparent;
+  -webkit-text-stroke:1px var(--a);
+  background:linear-gradient(135deg,var(--a),var(--purple));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.hero-sub{
+  font-size:18px;font-weight:400;color:var(--t2);
+  max-width:580px;margin:0 auto 48px;
+  line-height:1.7;
+  animation:fadeUp 0.6s 0.2s ease both;
+}
+.hero-actions{
+  display:flex;align-items:center;justify-content:center;gap:16px;
+  animation:fadeUp 0.6s 0.3s ease both;
+}
+.btn-hero-prime{
+  padding:14px 36px;border-radius:12px;
+  font-size:15px;font-weight:700;
+  background:var(--a);color:white;border:none;
+  cursor:pointer;transition:all 0.2s;
+  box-shadow:0 6px 24px rgba(59,130,246,0.4);
+  font-family:'Outfit',sans-serif;
+}
+.btn-hero-prime:hover{
+  background:var(--a2);transform:translateY(-2px);
+  box-shadow:0 10px 32px rgba(59,130,246,0.5);
+}
+.btn-hero-ghost{
+  padding:14px 36px;border-radius:12px;
+  font-size:15px;font-weight:600;
+  background:transparent;color:var(--t1);
+  border:1px solid var(--border2);
+  cursor:pointer;transition:all 0.2s;
+  font-family:'Outfit',sans-serif;
+}
+.btn-hero-ghost:hover{background:rgba(255,255,255,0.05);border-color:var(--a3);}
+
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(20px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+/* ── 4 CATEGORY CARDS ───────────────── */
+.categories{
+  position:relative;z-index:1;
+  padding:0 48px 80px;
+  max-width:1200px;margin:0 auto;
+}
+.cat-title{
+  text-align:center;
+  font-size:13px;font-weight:600;
+  letter-spacing:0.15em;text-transform:uppercase;
+  color:var(--t3);margin-bottom:40px;
+  animation:fadeUp 0.6s 0.4s ease both;
+}
+.cat-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:20px;
+}
+.cat-card{
+  position:relative;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:36px 28px;
+  cursor:pointer;
+  transition:all 0.35s cubic-bezier(0.4,0,0.2,1);
+  overflow:hidden;
+  animation:fadeUp 0.6s ease both;
+}
+.cat-card:nth-child(1){animation-delay:0.5s;}
+.cat-card:nth-child(2){animation-delay:0.6s;}
+.cat-card:nth-child(3){animation-delay:0.7s;}
+.cat-card:nth-child(4){animation-delay:0.8s;}
+
+.cat-card::before{
+  content:'';position:absolute;inset:0;
+  background:var(--card-glow,rgba(59,130,246,0.04));
+  opacity:0;transition:opacity 0.3s;
+}
+.cat-card:hover::before{opacity:1;}
+.cat-card:hover{
+  transform:translateY(-8px);
+  border-color:var(--card-color,var(--a));
+  box-shadow:0 20px 60px var(--card-shadow,rgba(59,130,246,0.15));
+}
+
+.cat-card.integ{--card-color:var(--c-integ);--card-glow:rgba(59,130,246,0.06);--card-shadow:rgba(59,130,246,0.15);}
+.cat-card.recon{--card-color:var(--c-recon);--card-glow:rgba(16,185,129,0.06);--card-shadow:rgba(16,185,129,0.15);}
+.cat-card.scan{--card-color:var(--c-scan);--card-glow:rgba(245,158,11,0.06);--card-shadow:rgba(245,158,11,0.15);}
+.cat-card.exploit{--card-color:var(--c-exploit);--card-glow:rgba(239,68,68,0.06);--card-shadow:rgba(239,68,68,0.15);}
+
+/* Card accent line top */
+.cat-card::after{
+  content:'';position:absolute;
+  top:0;left:24px;right:24px;height:2px;
+  background:var(--card-color,var(--a));
+  border-radius:0 0 4px 4px;
+  transform:scaleX(0);transition:transform 0.3s;
+}
+.cat-card:hover::after{transform:scaleX(1);}
+
+.cat-icon-wrap{
+  width:56px;height:56px;border-radius:16px;
+  background:var(--card-glow,var(--aL));
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:20px;
+  transition:transform 0.3s;
+  border:1px solid rgba(255,255,255,0.06);
+}
+.cat-card:hover .cat-icon-wrap{transform:scale(1.1) rotate(-3deg);}
+.cat-icon-wrap svg{width:26px;height:26px;display:block;}
+
+.cat-name{
+  font-size:18px;font-weight:700;
+  color:var(--t1);margin-bottom:10px;
+  letter-spacing:-0.01em;
+}
+.cat-desc{
+  font-size:13px;font-weight:400;
+  color:var(--t2);line-height:1.6;
+  margin-bottom:20px;
+}
+.cat-count{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:11.5px;font-weight:600;
+  color:var(--card-color,var(--a));
+  letter-spacing:0.04em;
+}
+.cat-count-dot{
+  width:5px;height:5px;border-radius:50%;
+  background:var(--card-color,var(--a));
+}
+.cat-arrow{
+  position:absolute;bottom:28px;right:28px;
+  width:32px;height:32px;border-radius:50%;
+  background:var(--card-glow,var(--aL));
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.3s;
+  border:1px solid rgba(255,255,255,0.06);
+}
+.cat-arrow svg{width:14px;height:14px;display:block;color:var(--card-color,var(--a));}
+.cat-card:hover .cat-arrow{
+  background:var(--card-color,var(--a));
+  transform:rotate(45deg);
+}
+.cat-card:hover .cat-arrow svg{color:white;}
+
+/* ── STATS BAR ──────────────────────── */
+.stats-bar{
+  position:relative;z-index:1;
+  display:flex;align-items:center;justify-content:center;gap:0;
+  padding:40px 48px;
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  background:rgba(255,255,255,0.01);
+  animation:fadeUp 0.6s 0.9s ease both;
+}
+.stat-item{
+  flex:1;text-align:center;
+  padding:0 32px;
+  border-right:1px solid var(--border);
+}
+.stat-item:last-child{border-right:none;}
+.stat-num{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:42px;letter-spacing:0.04em;
+  color:var(--t1);line-height:1;
+}
+.stat-num span{color:var(--a);}
+.stat-lab{
+  font-size:12px;font-weight:500;
+  color:var(--t3);text-transform:uppercase;
+  letter-spacing:0.1em;margin-top:6px;
+}
+
+/* ── FOOTER ─────────────────────────── */
+footer{
+  position:relative;z-index:1;
+  padding:40px 48px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-top:1px solid var(--border);
+  background:rgba(0,0,0,0.2);
+}
+.footer-logo{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:20px;letter-spacing:0.1em;
+  color:var(--t3);
+}
+.footer-links{display:flex;gap:24px;}
+.footer-link{
+  font-size:13px;color:var(--t3);
+  cursor:pointer;transition:color 0.2s;
+  text-decoration:none;
+}
+.footer-link:hover{color:var(--t1);}
+.footer-copy{font-size:12px;color:var(--t3);}
+
+/* ══════════════════════════════════════
+   LOGIN PAGE
+══════════════════════════════════════ */
+#login{
+  align-items:center;justify-content:center;
+  background:var(--ink);
+  position:relative;overflow:hidden;
+}
+
+.login-box{
+  position:relative;z-index:1;
+  width:100%;max-width:440px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:24px;
+  padding:48px 40px;
+  box-shadow:0 40px 80px rgba(0,0,0,0.4);
+  animation:loginIn 0.5s ease both;
+}
+@keyframes loginIn{
+  from{opacity:0;transform:translateY(30px) scale(0.97);}
+  to{opacity:1;transform:translateY(0) scale(1);}
+}
+.login-logo{
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  font-family:'Bebas Neue',sans-serif;
+  font-size:28px;letter-spacing:0.1em;
+  margin-bottom:8px;
+}
+.login-sub{
+  text-align:center;
+  font-size:13px;color:var(--t3);
+  margin-bottom:32px;
+}
+
+/* Account type selector */
+.account-types{
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;
+  margin-bottom:28px;
+}
+.acc-type{
+  padding:14px 12px;border-radius:12px;
+  border:1.5px solid var(--border);
+  background:transparent;
+  cursor:pointer;text-align:center;
+  transition:all 0.2s;
+}
+.acc-type:hover{border-color:var(--border2);background:rgba(255,255,255,0.03);}
+.acc-type.selected{
+  border-color:var(--a);
+  background:var(--aL);
+}
+.acc-type-icon{font-size:22px;margin-bottom:6px;}
+.acc-type-name{font-size:13px;font-weight:600;color:var(--t1);}
+.acc-type-desc{font-size:11px;color:var(--t3);margin-top:2px;}
+
+.login-divider{
+  display:flex;align-items:center;gap:12px;
+  margin-bottom:24px;
+  font-size:11px;color:var(--t3);letter-spacing:0.08em;text-transform:uppercase;
+}
+.login-divider::before,.login-divider::after{
+  content:'';flex:1;height:1px;background:var(--border);
+}
+
+.form-group{margin-bottom:16px;}
+.form-label{
+  display:block;font-size:12.5px;font-weight:600;
+  color:var(--t2);margin-bottom:8px;letter-spacing:0.04em;
+}
+.form-input{
+  width:100%;padding:12px 16px;
+  background:var(--ink2);
+  border:1.5px solid var(--border);
+  border-radius:10px;
+  font-size:14px;color:var(--t1);
+  font-family:'Outfit',sans-serif;
+  transition:all 0.2s;outline:none;
+}
+.form-input:focus{border-color:var(--a);box-shadow:0 0 0 3px rgba(59,130,246,0.1);}
+.form-input::placeholder{color:var(--t3);}
+
+.btn-login{
+  width:100%;padding:14px;border-radius:12px;
+  font-size:15px;font-weight:700;
+  background:var(--a);color:white;border:none;
+  cursor:pointer;transition:all 0.2s;
+  font-family:'Outfit',sans-serif;
+  margin-top:8px;
+  box-shadow:0 6px 20px rgba(59,130,246,0.35);
+}
+.btn-login:hover{background:var(--a2);transform:translateY(-1px);}
+
+.login-back{
+  text-align:center;margin-top:20px;
+  font-size:13px;color:var(--t3);cursor:pointer;
+  transition:color 0.2s;
+}
+.login-back:hover{color:var(--t1);}
+.login-back span{color:var(--a);font-weight:600;}
+
+/* ══════════════════════════════════════
+   DASHBOARD (authenticated)
+══════════════════════════════════════ */
+#dashboard{background:var(--ink);}
+
+.dash-nav{
+  height:64px;
+  background:rgba(6,9,18,0.95);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;
+  padding:0 36px;gap:16px;
+  position:sticky;top:0;z-index:50;
+  flex-shrink:0;
+}
+.dash-logo{
+  display:flex;align-items:center;gap:10px;
+  font-family:'Bebas Neue',sans-serif;
+  font-size:22px;letter-spacing:0.1em;
+  color:var(--t1);
+}
+.dash-spacer{flex:1;}
+.dash-user{
+  display:flex;align-items:center;gap:10px;
+  padding:6px 14px;border-radius:10px;
+  background:var(--surface2);
+  border:1px solid var(--border);cursor:pointer;
+}
+.dash-ava{
+  width:28px;height:28px;border-radius:50%;
+  background:linear-gradient(135deg,var(--a),var(--purple));
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:white;
+}
+.dash-username{font-size:13px;font-weight:600;color:var(--t1);}
+.dash-role{
+  font-size:10px;font-weight:600;color:var(--a3);
+  background:var(--aL);padding:2px 8px;border-radius:99px;
+}
+.btn-logout{
+  padding:8px 18px;border-radius:8px;
+  font-size:13px;font-weight:600;
+  background:transparent;color:var(--t2);
+  border:1px solid var(--border);
+  cursor:pointer;transition:all 0.2s;
+  font-family:'Outfit',sans-serif;
+}
+.btn-logout:hover{background:var(--redL);border-color:var(--red);color:var(--red);}
+
+/* Dashboard content */
+.dash-content{flex:1;overflow-y:auto;padding:40px 48px;}
+
+.dash-header{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  margin-bottom:40px;
+}
+.dash-greet{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:42px;letter-spacing:0.03em;
+  color:var(--t1);line-height:1;
+}
+.dash-greet span{color:var(--a);}
+.dash-date{font-size:13px;color:var(--t3);margin-top:6px;}
+.dash-kpis{display:flex;gap:12px;}
+.kpi-pill{
+  padding:10px 20px;border-radius:10px;
+  background:var(--surface);border:1px solid var(--border);
+  text-align:center;
+}
+.kpi-pill-val{font-size:22px;font-weight:800;color:var(--t1);line-height:1;}
+.kpi-pill-lab{font-size:10px;color:var(--t3);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-top:3px;}
+
+/* Category buttons grid */
+.dash-cat-title{
+  font-size:11px;font-weight:700;
+  letter-spacing:0.15em;text-transform:uppercase;
+  color:var(--t3);margin-bottom:20px;
+}
+.dash-cat-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+  margin-bottom:40px;
+}
+.dash-cat-btn{
+  position:relative;
+  padding:28px 24px;border-radius:16px;
+  background:var(--surface);
+  border:1.5px solid var(--border);
+  cursor:pointer;
+  transition:all 0.25s cubic-bezier(0.4,0,0.2,1);
+  overflow:hidden;
+  text-align:left;
+}
+.dash-cat-btn::before{
+  content:'';position:absolute;
+  bottom:0;left:0;right:0;height:3px;
+  background:var(--btn-color);
+  transform:scaleX(0);transition:transform 0.3s;
+  transform-origin:left;
+}
+.dash-cat-btn:hover::before,.dash-cat-btn.active-cat::before{transform:scaleX(1);}
+.dash-cat-btn:hover,.dash-cat-btn.active-cat{
+  border-color:var(--btn-color);
+  background:var(--surface2);
+  transform:translateY(-4px);
+  box-shadow:0 12px 40px var(--btn-shadow);
+}
+.dash-cat-btn.integ{--btn-color:var(--c-integ);--btn-shadow:rgba(59,130,246,0.12);}
+.dash-cat-btn.recon{--btn-color:var(--c-recon);--btn-shadow:rgba(16,185,129,0.12);}
+.dash-cat-btn.scan{--btn-color:var(--c-scan);--btn-shadow:rgba(245,158,11,0.12);}
+.dash-cat-btn.exploit{--btn-color:var(--c-exploit);--btn-shadow:rgba(239,68,68,0.12);}
+
+.dcb-icon{
+  width:44px;height:44px;border-radius:12px;
+  background:rgba(255,255,255,0.05);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:16px;border:1px solid rgba(255,255,255,0.06);
+}
+.dcb-icon svg{width:22px;height:22px;display:block;}
+.dcb-name{font-size:15px;font-weight:700;color:var(--t1);margin-bottom:4px;}
+.dcb-count{font-size:12px;color:var(--t3);}
+
+/* Tools panel */
+.tools-panel{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:20px;
+  overflow:hidden;
+  animation:fadeUp 0.4s ease both;
+}
+.tools-panel-header{
+  padding:20px 28px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.tools-panel-title{font-size:15px;font-weight:700;color:var(--t1);}
+.tools-panel-cat{
+  display:flex;align-items:center;gap:8px;
+  font-size:12px;font-weight:600;
+  padding:5px 14px;border-radius:99px;
+}
+.tools-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:1px;
+  background:var(--border);
+}
+.tool-btn{
+  padding:24px 20px;
+  background:var(--surface);
+  cursor:pointer;
+  transition:all 0.2s;
+  display:flex;flex-direction:column;gap:10px;
+  text-decoration:none;
+}
+.tool-btn:hover{background:var(--surface2);}
+.tool-btn-icon{
+  width:40px;height:40px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;
+}
+.tool-btn-name{font-size:13px;font-weight:700;color:var(--t1);}
+.tool-btn-desc{font-size:11.5px;color:var(--t3);line-height:1.4;}
+.tool-badge{
+  display:inline-flex;align-items:center;
+  font-size:10px;font-weight:700;
+  padding:2px 8px;border-radius:99px;
+  margin-top:4px;
+  width:fit-content;
+}
+
+/* No category selected */
+.no-cat{
+  padding:60px 28px;
+  text-align:center;
+  color:var(--t3);
+}
+.no-cat-icon{font-size:48px;margin-bottom:16px;opacity:0.3;}
+.no-cat-text{font-size:15px;}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════
+     LANDING PAGE
+════════════════════════════════════ -->
+<div id="landing" class="page active">
+  <div class="bg-grid"></div>
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+  <div class="watermark">PROTEGIO</div>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a class="nav-logo" href="#">
+      <div class="nav-shield">
+        <svg viewBox="0 0 24 24"><path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.35C16.5 22.15 20 17.25 20 12V6L12 2z"/></svg>
+      </div>
+      PROTEGIO
+    </a>
+    <div class="nav-spacer"></div>
+    <div class="nav-links">
+      <a class="nav-link" href="#">À propos</a>
+      <a class="nav-link" href="#">Documentation</a>
+      <a class="nav-link" href="#">Contact</a>
+      {% if user.is_authenticated %}
+        <a href="/accounts/logout/" style="padding: 10px 24px; border-radius: 10px; font-size: 14px; font-weight: 700; background: var(--a); color: white; text-decoration: none; box-shadow: 0 4px 16px rgba(59,130,246,0.35);">
+          Déconnexion
+        </a>
+      {% else %}
+        <a href="/accounts/login/" class="btn-connect">🔐 Connexion</a>
+      {% endif %}
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-badge">
+      <div class="hero-badge-dot"></div>
+      Plateforme de Sécurité Unifiée v2.0 Pro
+    </div>
+    <h1 class="hero-title">
+      Security<br><span>Intelligence</span><br>Platform
+    </h1>
+    <p class="hero-sub">
+      Reconnaissance, scanning, exploitation et intégrations réunies dans une seule plateforme. Protégez vos systèmes avec des outils professionnels de cybersécurité.
+    </p>
+    <div class="hero-actions">
+      {% if user.is_authenticated %}
+        <a href="/dashboard/" class="btn-hero-prime">Accéder à la plateforme →</a>
+        <a href="/accounts/profile/" class="btn-hero-ghost">Mon profil</a>
+      {% else %}
+        <a href="/accounts/signup/" class="btn-hero-prime">S'inscrire Gratuitement →</a>
+        <a href="/accounts/login/" class="btn-hero-ghost">Connexion</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-bar">
+    <div class="stat-item">
+      <div class="stat-num">3<span>666</span></div>
+      <div class="stat-lab">Scans effectués</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num"><span>42</span></div>
+      <div class="stat-lab">Vulnérabilités détectées</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num"><span>16</span>+</div>
+      <div class="stat-lab">Outils intégrés</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num"><span>99</span>.9%</div>
+      <div class="stat-lab">Uptime plateforme</div>
+    </div>
+  </div>
+
+  <!-- 4 CATEGORY CARDS -->
+  <div class="categories" id="categories">
+    <div class="cat-title">— Modules disponibles —</div>
+    <div class="cat-grid">
+
+      <div class="cat-card integ" {% if not user.is_authenticated %}onclick="window.location.href='/accounts/login/'"{% else %}onclick="showLogin()"{% endif %}>
+        <div class="cat-icon-wrap" style="background:rgba(59,130,246,0.1)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--c-integ)" stroke-width="2">
+            <path d="M18 20V10M12 20V4M6 20v-6"/><circle cx="18" cy="8" r="2"/><circle cx="12" cy="4" r="2"/><circle cx="6" cy="12" r="2"/>
+          </svg>
+        </div>
+        <div class="cat-name">Intégrations</div>
+        <div class="cat-desc">Nuclei Scanner, Port Scanner, SSL/TLS, API Security, CVE Lookup et génération de rapports détaillés.</div>
+        <div class="cat-count"><div class="cat-count-dot"></div>6 outils disponibles</div>
+        <div class="cat-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+
+      <div class="cat-card recon" {% if not user.is_authenticated %}onclick="window.location.href='/accounts/login/'"{% else %}onclick="showLogin()"{% endif %}>
+        <div class="cat-icon-wrap" style="background:rgba(16,185,129,0.1)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--c-recon)" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+        </div>
+        <div class="cat-name">Reconnaissance</div>
+        <div class="cat-desc">Whois, Whatsmyname, NsLookup, DIG-MX Tool. Collecte d'informations avancée sur vos cibles.</div>
+        <div class="cat-count"><div class="cat-count-dot" style="background:var(--c-recon)"></div>4 outils disponibles</div>
+        <div class="cat-arrow" style="background:rgba(16,185,129,0.1)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--c-recon)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+
+      <div class="cat-card scan" {% if not user.is_authenticated %}onclick="window.location.href='/accounts/login/'"{% else %}onclick="showLogin()"{% endif %}>
+        <div class="cat-icon-wrap" style="background:rgba(245,158,11,0.1)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--c-scan)" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <div class="cat-name">Scanning</div>
+        <div class="cat-desc">OWASP-ZAP, NIKTO, PerforNet, Burp Suite. Scan complet de vulnérabilités web et réseau.</div>
+        <div class="cat-count"><div class="cat-count-dot" style="background:var(--c-scan)"></div>4 outils disponibles</div>
+        <div class="cat-arrow" style="background:rgba(245,158,11,0.1)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--c-scan)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+
+      <div class="cat-card exploit" {% if not user.is_authenticated %}onclick="window.location.href='/accounts/login/'"{% else %}onclick="showLogin()"{% endif %}>
+        <div class="cat-icon-wrap" style="background:rgba(239,68,68,0.1)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--c-exploit)" stroke-width="2">
+            <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+          </svg>
+        </div>
+        <div class="cat-name">Exploitation</div>
+        <div class="cat-desc">SQLMap pour l'injection SQL avancée. Tests d'intrusion et exploitation de vulnérabilités.</div>
+        <div class="cat-count"><div class="cat-count-dot" style="background:var(--c-exploit)"></div>1 outil disponible</div>
+        <div class="cat-arrow" style="background:rgba(239,68,68,0.1)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--c-exploit)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">PROTEGIO</div>
+    <div class="footer-links">
+      <a class="footer-link" href="#">Documentation</a>
+      <a class="footer-link" href="#">API</a>
+      <a class="footer-link" href="#">Confidentialité</a>
+      <a class="footer-link" href="#">Support</a>
+    </div>
+    <div class="footer-copy">© 2026 PROTEGIO · Security Intelligence Platform v2.0 Pro</div>
+  </footer>
+</div>
+
+<!-- ════════════════════════════════════
+     LOGIN PAGE
+════════════════════════════════════ -->
+<div id="login" class="page">
+  <div class="bg-grid"></div>
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="nav-shield">
+        <svg viewBox="0 0 24 24"><path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.35C16.5 22.15 20 17.25 20 12V6L12 2z"/></svg>
+      </div>
+      PROTEGIO
+    </div>
+    <div class="login-sub">Connectez-vous pour accéder à la plateforme</div>
+
+    <!-- Account type -->
+    <div class="account-types">
+      <div class="acc-type selected" onclick="selectType(this,'admin')">
+        <div class="acc-type-icon">👑</div>
+        <div class="acc-type-name">Administrateur</div>
+        <div class="acc-type-desc">Accès complet</div>
+      </div>
+      <div class="acc-type" onclick="selectType(this,'analyst')">
+        <div class="acc-type-icon">🔍</div>
+        <div class="acc-type-name">Analyste</div>
+        <div class="acc-type-desc">Lecture & rapports</div>
+      </div>
+      <div class="acc-type" onclick="selectType(this,'pentester')">
+        <div class="acc-type-icon">⚡</div>
+        <div class="acc-type-name">Pentester</div>
+        <div class="acc-type-desc">Outils offensifs</div>
+      </div>
+      <div class="acc-type" onclick="selectType(this,'viewer')">
+        <div class="acc-type-icon">👁️</div>
+        <div class="acc-type-name">Observateur</div>
+        <div class="acc-type-desc">Vue en lecture</div>
+      </div>
+    </div>
+
+    <div class="login-divider">Identifiants</div>
+
+    <div class="form-group">
+      <label class="form-label">Nom d'utilisateur</label>
+      <input class="form-input" type="text" placeholder="admin" id="loginUser">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Mot de passe</label>
+      <input class="form-input" type="password" placeholder="••••••••" id="loginPass">
+    </div>
+
+    <button class="btn-login" onclick="doLogin()">
+      Connexion →
+    </button>
+
+    <div class="login-back" onclick="showLanding()">
+      ← Retour · <span>Page d'accueil</span>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     DASHBOARD (authenticated)
+════════════════════════════════════ -->
+<div id="dashboard" class="page">
+  <div class="bg-grid" style="opacity:0.3"></div>
+
+  <!-- DASH NAV -->
+  <nav class="dash-nav">
+    <div class="dash-logo">
+      <div class="nav-shield" style="width:30px;height:30px;border-radius:8px;">
+        <svg viewBox="0 0 24 24" style="width:15px;height:15px"><path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.35C16.5 22.15 20 17.25 20 12V6L12 2z"/></svg>
+      </div>
+      PROTEGIO
+    </div>
+    <div style="font-size:11px;color:var(--t3);margin-left:8px;font-family:'JetBrains Mono',monospace;">v2.0 Pro</div>
+    <div class="dash-spacer"></div>
+    <div class="dash-user">
+      <div class="dash-ava" id="dashAva">AD</div>
+      <div>
+        <div class="dash-username" id="dashName">Admin</div>
+      </div>
+      <div class="dash-role" id="dashRole">Administrateur</div>
+    </div>
+    <button class="btn-logout" onclick="doLogout()">Déconnexion</button>
+  </nav>
+
+  <!-- DASH CONTENT -->
+  <div class="dash-content">
+
+    <!-- Header -->
+    <div class="dash-header">
+      <div>
+        <div class="dash-greet">Bienvenue, <span id="greetName">Admin</span> !</div>
+        <div class="dash-date" id="dashDate"></div>
+      </div>
+      <div class="dash-kpis">
+        <div class="kpi-pill">
+          <div class="kpi-pill-val" style="color:var(--a)">3666</div>
+          <div class="kpi-pill-lab">Scans</div>
+        </div>
+        <div class="kpi-pill">
+          <div class="kpi-pill-val" style="color:var(--red)">42</div>
+          <div class="kpi-pill-lab">Vulnérabilités</div>
+        </div>
+        <div class="kpi-pill">
+          <div class="kpi-pill-val" style="color:var(--green)">156</div>
+          <div class="kpi-pill-lab">Rapports</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category buttons -->
+    <div class="dash-cat-title">— Sélectionnez une catégorie d'outils —</div>
+    <div class="dash-cat-grid">
+
+      <div class="dash-cat-btn integ" onclick="showTools('integ',this)">
+        <div class="dcb-icon" style="background:rgba(59,130,246,0.1)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--c-integ)" stroke-width="2">
+            <path d="M18 20V10M12 20V4M6 20v-6"/><circle cx="18" cy="8" r="2"/><circle cx="12" cy="4" r="2"/><circle cx="6" cy="12" r="2"/>
+          </svg>
+        </div>
+        <div class="dcb-name">Intégrations</div>
+        <div class="dcb-count">6 outils</div>
+      </div>
+
+      <div class="dash-cat-btn recon" onclick="showTools('recon',this)">
+        <div class="dcb-icon" style="background:rgba(16,185,129,0.1)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--c-recon)" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+        </div>
+        <div class="dcb-name">Reconnaissance</div>
+        <div class="dcb-count">4 outils</div>
+      </div>
+
+      <div class="dash-cat-btn scan" onclick="showTools('scan',this)">
+        <div class="dcb-icon" style="background:rgba(245,158,11,0.1)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--c-scan)" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <div class="dcb-name">Scanning</div>
+        <div class="dcb-count">4 outils</div>
+      </div>
+
+      <div class="dash-cat-btn exploit" onclick="showTools('exploit',this)">
+        <div class="dcb-icon" style="background:rgba(239,68,68,0.1)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--c-exploit)" stroke-width="2">
+            <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+          </svg>
+        </div>
+        <div class="dcb-name">Exploitation</div>
+        <div class="dcb-count">1 outil</div>
+      </div>
+
+    </div>
+
+    <!-- Tools panel -->
+    <div class="tools-panel" id="toolsPanel">
+      <div class="no-cat">
+        <div class="no-cat-icon">🛡️</div>
+        <div class="no-cat-text">Sélectionnez une catégorie pour voir les outils disponibles</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════
+let currentType = 'admin';
+let currentUser = { name:'Admin', role:'Administrateur', initials:'AD' };
+
+const TOOLS = {
+  integ: {
+    label:'Intégrations',
+    color:'var(--c-integ)',
+    bg:'rgba(59,130,246,0.1)',
+    tools:[
+      { icon:'⚙️', name:'Nuclei Scanner', desc:'Scan de vulnérabilités', url:'/integrations/nuclei/', badge:'Actif', badgeColor:'rgba(16,185,129,0.15)', badgeText:'var(--green)' },
+      { icon:'🔌', name:'Port Scanner', desc:'Scan des ports ouverts', url:'/integrations/portscanner/', badge:'Actif', badgeColor:'rgba(16,185,129,0.15)', badgeText:'var(--green)' },
+      { icon:'🔒', name:'SSL/TLS Check', desc:'Vérification certificats', url:'/integrations/ssl/', badge:'Actif', badgeColor:'rgba(16,185,129,0.15)', badgeText:'var(--green)' },
+      { icon:'🛡️', name:'API Security', desc:'Tests de sécurité API', url:'/integrations/api/', badge:'Beta', badgeColor:'rgba(245,158,11,0.15)', badgeText:'var(--amber)' },
+      { icon:'🐛', name:'CVE Lookup', desc:'Recherche CVE/NVD', url:'/integrations/cve/', badge:'Actif', badgeColor:'rgba(16,185,129,0.15)', badgeText:'var(--green)' },
+      { icon:'📄', name:'Rapports', desc:'Génération de rapports PDF', url:'/reports/', badge:'Actif', badgeColor:'rgba(16,185,129,0.15)', badgeText:'var(--green)' },
+    ]
+  },
+  recon: {
+    label:'Reconnaissance',
+    color:'var(--c-recon)',
+    bg:'rgba(16,185,129,0.1)',
+    tools:[
+      { icon:'🌐', name:'Whois', desc:'Informations de domaine', url:'/protegioTools/whois/', badge:'Actif', badgeColor:'rgba(16,185,129,0.15)', badgeText:'var(--green)' },
+      { icon:'🔍', name:'Whatsmyname', desc:'Recherche de pseudonymes', url:'/protegioTools/whatsmyname/', badge:'Actif', badgeColor:'rgba(16,185,129,0.15)', badgeText:'var(--green)' },
+      { icon:'📡', name:'NsLookup', desc:'Résolution DNS avancée', url:'/protegioTools/nslookup/', badge:'Actif', badgeColor:'rgba(16,185,129,0.15)', badgeText:'var(--green)' },
+      { icon:'📬', name:'DIG-MX Tool', desc:'Analyse enregistrements MX', url:'/protegioTools/dig/', badge:'Actif', badgeColor:'rgba(16,185,129,0.15)', badgeText:'var(--green)' },
+    ]
+  },
+  scan: {
+    label:'Scanning',
+    color:'var(--c-scan)',
+    bg:'rgba(245,158,11,0.1)',
+    tools:[
+      { icon:'⚡', name:'OWASP-ZAP', desc:'Scanner web automatisé', url:'/scanner/zap/', badge:'Actif', badgeColor:'rgba(16,185,129,0.15)', badgeText:'var(--green)' },
+      { icon:'🕷️', name:'NIKTO', desc:'Scan serveur web', url:'/nikto/', badge:'Actif', badgeColor:'rgba(16,185,129,0.15)', badgeText:'var(--green)' },
+      { icon:'📊', name:'PerforNet', desc:'Analyse de performance réseau', url:'/perforNet/', badge:'Actif', badgeColor:'rgba(16,185,129,0.15)', badgeText:'var(--green)' },
+      { icon:'🔀', name:'Burp Suite', desc:'Proxy & tests web avancés', url:'/burp-suite/', badge:'Actif', badgeColor:'rgba(16,185,129,0.15)', badgeText:'var(--green)' },
+    ]
+  },
+  exploit: {
+    label:'Exploitation',
+    color:'var(--c-exploit)',
+    bg:'rgba(239,68,68,0.1)',
+    tools:[
+      { icon:'💉', name:'SQLMap', desc:'Injection SQL automatisée', url:'/sqlmap/', badge:'Danger', badgeColor:'rgba(239,68,68,0.15)', badgeText:'var(--red)' },
+    ]
+  }
+};
+
+const ROLES = {
+  admin:    { label:'Administrateur', initials:'AD' },
+  analyst:  { label:'Analyste',       initials:'AN' },
+  pentester:{ label:'Pentester',      initials:'PT' },
+  viewer:   { label:'Observateur',    initials:'OB' },
+};
+
+// ══════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function showLogin(){ showPage('login'); }
+function showLanding(){ showPage('landing'); }
+function scrollToCats(){
+  document.getElementById('categories').scrollIntoView({behavior:'smooth'});
+}
+
+// ══════════════════════════════════════
+//  ACCOUNT TYPE
+// ══════════════════════════════════════
+function selectType(el, type){
+  document.querySelectorAll('.acc-type').forEach(a=>a.classList.remove('selected'));
+  el.classList.add('selected');
+  currentType = type;
+}
+
+// ══════════════════════════════════════
+//  LOGIN
+// ══════════════════════════════════════
+function doLogin(){
+  const user = document.getElementById('loginUser').value || 'admin';
+  const role = ROLES[currentType];
+  currentUser = {
+    name: user.charAt(0).toUpperCase() + user.slice(1),
+    role: role.label,
+    initials: role.initials
+  };
+  // Update dashboard UI
+  document.getElementById('dashAva').textContent = currentUser.initials;
+  document.getElementById('dashName').textContent = currentUser.name;
+  document.getElementById('dashRole').textContent = currentUser.role;
+  document.getElementById('greetName').textContent = currentUser.name;
+
+  // Date
+  const now = new Date();
+  document.getElementById('dashDate').textContent =
+    `Dernière connexion : ${now.toLocaleDateString('fr-FR',{weekday:'long',year:'numeric',month:'long',day:'numeric'})} à ${now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}`;
+
+  // Reset tools panel
+  document.getElementById('toolsPanel').innerHTML = `
+    <div class="no-cat">
+      <div class="no-cat-icon">🛡️</div>
+      <div class="no-cat-text">Sélectionnez une catégorie pour voir les outils disponibles</div>
+    </div>`;
+  document.querySelectorAll('.dash-cat-btn').forEach(b=>b.classList.remove('active-cat'));
+
+  showPage('dashboard');
+}
+
+function doLogout(){
+  showPage('landing');
+  document.getElementById('loginUser').value='';
+  document.getElementById('loginPass').value='';
+}
+
+// ══════════════════════════════════════
+//  SHOW TOOLS
+// ══════════════════════════════════════
+function showTools(cat, btn){
+  // Active button
+  document.querySelectorAll('.dash-cat-btn').forEach(b=>b.classList.remove('active-cat'));
+  btn.classList.add('active-cat');
+
+  const data = TOOLS[cat];
+  const panel = document.getElementById('toolsPanel');
+
+  const toolsHTML = data.tools.map(t => `
+    <a class="tool-btn" href="${t.url}">
+      <div class="tool-btn-icon" style="background:${data.bg}">${t.icon}</div>
+      <div>
+        <div class="tool-btn-name">${t.name}</div>
+        <div class="tool-btn-desc">${t.desc}</div>
+        <div class="tool-badge" style="background:${t.badgeColor};color:${t.badgeText}">${t.badge}</div>
+      </div>
+    </a>
+  `).join('');
+
+  panel.innerHTML = `
+    <div class="tools-panel-header">
+      <div class="tools-panel-title">Outils — ${data.label}</div>
+      <div class="tools-panel-cat" style="background:${data.bg.replace('0.1','0.15')};color:${data.color}">
+        ${data.tools.length} outil${data.tools.length>1?'s':''} disponible${data.tools.length>1?'s':''}
+      </div>
+    </div>
+    <div class="tools-grid">${toolsHTML}</div>
+  `;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Activity Log - PROTEGIO{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    <header class="page-header">
+        <div class="header-content">
+            <h1><i class="fas fa-history"></i> Activity Log</h1>
+            <p>Your recent account activities</p>
+        </div>
+    </header>
+
+    <div class="content-area">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-clock"></i> Recent Activities</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Date & Time</th>
+                            <th>Activity</th>
+                            <th>Details</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Today at 10:30 AM</td>
+                            <td>Login</td>
+                            <td>From 192.168.1.1</td>
+                            <td><span class="badge bg-success">Success</span></td>
+                        </tr>
+                        <tr>
+                            <td>Yesterday at 2:15 PM</td>
+                            <td>Dashboard Access</td>
+                            <td>Viewed statistics</td>
+                            <td><span class="badge bg-success">Success</span></td>
+                        </tr>
+                        <tr>
+                            <td>2 days ago</td>
+                            <td>Profile Updated</td>
+                            <td>Changed email address</td>
+                            <td><span class="badge bg-info">Updated</span></td>
+                        </tr>
+                        <tr>
+                            <td>3 days ago</td>
+                            <td>Scan Initiated</td>
+                            <td>Network scan started</td>
+                            <td><span class="badge bg-success">Completed</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+    }
+
+    .card-header {
+        background: rgba(88, 166, 255, 0.05);
+        padding: 15px;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .card-header h5 {
+        margin: 0;
+        color: var(--text-main);
+    }
+
+    .table {
+        color: var(--text-main);
+    }
+
+    .table thead {
+        border-top: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .table th {
+        color: var(--text-muted);
+        font-weight: 600;
+        border: none;
+    }
+
+    .table td {
+        border-top: 1px solid var(--border-color);
+        vertical-align: middle;
+    }
+
+    .table tbody tr:hover {
+        background: rgba(88, 166, 255, 0.05);
+    }
+</style>
+{% endblock %}
