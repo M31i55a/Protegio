@@ -195,7 +195,7 @@
 
 <!-- MAIN TABS -->
 <div class="main-tabs">
-    <a href="{% url 'dashboard' %}" class="main-tab {% block tab_dashboard %}{% endblock %}" style="text-decoration:none;color:inherit">📊 Dashboard</a>
+    <a href="{% url 'dashboard:home' %}" class="main-tab {% block tab_dashboard %}{% endblock %}" style="text-decoration:none;color:inherit">📊 Dashboard</a>
     <a href="{% url 'target' %}" class="main-tab {% block tab_target %}{% endblock %}" style="text-decoration:none;color:inherit">🎯 Target</a>
     <a href="{% url 'proxy' %}" class="main-tab {% block tab_proxy %}{% endblock %}" style="text-decoration:none;color:inherit">
         🔀 Proxy <span class="tab-badge">{{ proxy_count|default:"" }}</span>

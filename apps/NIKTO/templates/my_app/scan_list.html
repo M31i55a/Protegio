@@ -170,7 +170,7 @@
     <h1>Historique des scans</h1>
     <p class="page-subtitle">// Liste complète des scans Nikto effectués</p>
   </div>
-  <a href="{% url 'dashboard' %}" class="btn btn-primary">▶ Nouveau scan</a>
+  <a href="{% url 'dashboard:home' %}" class="btn btn-primary">▶ Nouveau scan</a>
 </div>
 
 <!-- Filtres -->
@@ -302,7 +302,7 @@
     <h2>Aucun scan trouvé</h2>
     <p>{% if request.GET.q %}Aucun résultat pour "{{ request.GET.q }}"{% else %}Lancez votre premier scan depuis le dashboard{% endif %}</p>
     <div class="mt-2">
-      <a href="{% url 'dashboard' %}" class="btn btn-primary">▶ Nouveau scan</a>
+      <a href="{% url 'dashboard:home' %}" class="btn btn-primary">▶ Nouveau scan</a>
     </div>
   </div>
   {% endif %}

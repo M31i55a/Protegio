@@ -45,13 +45,13 @@ async function startSpider() {
   if (!url) { toast('URL requise', 'error'); return; }
   document.getElementById('spider-progress').style.display = 'block';
   let p = 0;
-  const r = await fetch('/spider/start/', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url})});
+  const r = await fetch('/burp-suite/spider/start/', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url})});
   const d = await r.json();
   toast('Spider démarré!', 'success');
   const poll = setInterval(async () => {
     p = Math.min(p+10, 95);
     document.getElementById('spider-fill').style.width = p+'%';
-    const resp = await fetch(`/scanner/${d.id}/status/`);
+    const resp = await fetch(`/burp-suite/scanner/${d.id}/status/`);
     const sd = await resp.json();
     if (sd.status === 'completed') {
       clearInterval(poll);

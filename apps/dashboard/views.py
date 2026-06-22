@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 def landing(request):
     if request.user.is_authenticated:
         return redirect('dashboard:home')
-    return render(request, 'dashboard/dashboard.html')
+    return render(request, 'dashboard/landing.html')
 
 # ── DASHBOARD (authentifié) ──
 @login_required

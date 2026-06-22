@@ -9,22 +9,33 @@ from allauth.account.signals import email_confirmed
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.conf import settings
+import datetime
 
 # ============ AUTHENTICATION VIEWS ============
 
 @require_http_methods(["GET", "POST"])
 def login_view(request):
-    """User login view"""
+    """User login view with Remember Me support"""
     if request.user.is_authenticated:
         return redirect('dashboard:home')
     
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
+        remember_me = request.POST.get('remember_me')
         user = authenticate(request, username=username, password=password)
         
         if user is not None:
             login(request, user)
+            
+            # "Remember Me" logic
+            if not remember_me:
+                # Session expires when browser closes
+                request.session.set_expiry(0)
+            else:
+                # Session lasts 2 weeks (Django default)
+                request.session.set_expiry(1209600)
+            
             next_page = request.GET.get('next', 'dashboard:home')
             return redirect(next_page)
         else:

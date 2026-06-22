@@ -90,8 +90,8 @@ function showIssue(id) {
 
 async function deleteScan(id) {
   if (!confirm('Supprimer ce scan et toutes ses issues ?')) return;
-  await fetch(`/scanner/${id}/delete/`, {method:'DELETE'});
-  location.href = '/scanner/';
+  await fetch(`/burp-suite/scanner/${id}/delete/`, {method:'DELETE'});
+  location.href = '/burp-suite/scanner/';
 }
 </script>
 {% endblock %}

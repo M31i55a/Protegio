@@ -334,7 +334,7 @@ function toggleIntercept() {
 function forwardBlocked() {
   if (!selectedBlockedId) return;
   const edited = document.getElementById('request-editor-raw').value;
-  fetch(`/proxy/${selectedBlockedId}/modify/`, {
+  fetch(`/burp-suite/proxy/${selectedBlockedId}/modify/`, {
     method: 'POST',
     headers: {'Content-Type':'application/json','X-CSRFToken':getCookie('csrftoken')},
     body: JSON.stringify({body: edited})
@@ -350,7 +350,7 @@ function forwardBlocked() {
 
 function dropBlocked() {
   if (!selectedBlockedId) return;
-  fetch(`/proxy/${selectedBlockedId}/drop/`, {method:'POST', headers:{'X-CSRFToken':getCookie('csrftoken')}})
+  fetch(`/burp-suite/proxy/${selectedBlockedId}/drop/`, {method:'POST', headers:{'X-CSRFToken':getCookie('csrftoken')}})
   .then(() => {
     selectedBlockedId = null;
     document.getElementById('request-editor-raw').value = '';
@@ -377,7 +377,7 @@ function selectBlocked(id, method, url, body, headers) {
 
 function loadBlockedRequests() {
   if (!interceptEnabled) return;
-  fetch("/proxy/history/")
+fetch("/burp-suite/proxy/history/")
     .then(r => r.json())
     .then(data => {
       const blocked = data.requests.filter(r => r.intercepted);
@@ -405,7 +405,7 @@ function loadBlockedRequests() {
 }
 
 function loadRequests() {
-  return fetch("/proxy/history/")
+  return fetch("/burp-suite/proxy/history/")
     .then(r => r.json())
     .then(data => {
       allRequests = data.requests;
@@ -493,7 +493,7 @@ function showDetail(id) {
 function closeDetail() { document.getElementById('detail-panel').style.display='none'; }
 
 function deleteReq(id) {
-  fetch(`/proxy/${id}/delete/`, {method:'DELETE', headers:{'X-CSRFToken':getCookie('csrftoken')}})
+  fetch(`/burp-suite/proxy/${id}/delete/`, {method:'DELETE', headers:{'X-CSRFToken':getCookie('csrftoken')}})
   .then(() => loadRequests());
 }
 
@@ -506,7 +506,7 @@ function clearHistory() {
 function sendToRepeater(id) {
   const r = allRequests.find(x => x.id===id);
   if (!r) return;
-  fetch('/repeater/send/', {
+  fetch('/burp-suite/repeater/send/', {
     method:'POST',
     headers:{'Content-Type':'application/json','X-CSRFToken':getCookie('csrftoken')},
     body: JSON.stringify({name: r.method+' '+(r.path||r.url), method:r.method, url:r.url, headers:r.request_headers, body:r.request_body})

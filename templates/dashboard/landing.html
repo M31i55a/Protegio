@@ -770,7 +770,7 @@ footer{
     <div class="cat-title">— Modules disponibles —</div>
     <div class="cat-grid">
 
-      <div class="cat-card integ" {% if not user.is_authenticated %}onclick="window.location.href='/accounts/login/'"{% else %}onclick="showLogin()"{% endif %}>
+      <div class="cat-card integ" onclick="window.location.href='/accounts/login/'">
         <div class="cat-icon-wrap" style="background:rgba(59,130,246,0.1)">
           <svg viewBox="0 0 24 24" fill="none" stroke="var(--c-integ)" stroke-width="2">
             <path d="M18 20V10M12 20V4M6 20v-6"/><circle cx="18" cy="8" r="2"/><circle cx="12" cy="4" r="2"/><circle cx="6" cy="12" r="2"/>
@@ -784,7 +784,7 @@ footer{
         </div>
       </div>
 
-      <div class="cat-card recon" {% if not user.is_authenticated %}onclick="window.location.href='/accounts/login/'"{% else %}onclick="showLogin()"{% endif %}>
+      <div class="cat-card recon" onclick="window.location.href='/accounts/login/'">
         <div class="cat-icon-wrap" style="background:rgba(16,185,129,0.1)">
           <svg viewBox="0 0 24 24" fill="none" stroke="var(--c-recon)" stroke-width="2">
             <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
@@ -798,7 +798,7 @@ footer{
         </div>
       </div>
 
-      <div class="cat-card scan" {% if not user.is_authenticated %}onclick="window.location.href='/accounts/login/'"{% else %}onclick="showLogin()"{% endif %}>
+      <div class="cat-card scan" onclick="window.location.href='/accounts/login/'">
         <div class="cat-icon-wrap" style="background:rgba(245,158,11,0.1)">
           <svg viewBox="0 0 24 24" fill="none" stroke="var(--c-scan)" stroke-width="2">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
@@ -812,7 +812,7 @@ footer{
         </div>
       </div>
 
-      <div class="cat-card exploit" {% if not user.is_authenticated %}onclick="window.location.href='/accounts/login/'"{% else %}onclick="showLogin()"{% endif %}>
+      <div class="cat-card exploit" onclick="window.location.href='/accounts/login/'">
         <div class="cat-icon-wrap" style="background:rgba(239,68,68,0.1)">
           <svg viewBox="0 0 24 24" fill="none" stroke="var(--c-exploit)" stroke-width="2">
             <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>

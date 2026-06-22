@@ -111,7 +111,7 @@ async function processData() {
   const operation = document.getElementById('d-operation').value;
   if (!input) { toast('Données requises', 'error'); return; }
 
-  const r = await fetch('/decoder/encode/', {
+  const r = await fetch('/burp-suite/decoder/encode/', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({ input, encoding, operation })
@@ -157,7 +157,7 @@ function addChain(encoding, operation) {
 async function runChain() {
   let current = document.getElementById('d-input').value;
   for (const step of chainSteps) {
-    const r = await fetch('/decoder/encode/', {
+    const r = await fetch('/burp-suite/decoder/encode/', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({ input: current, encoding: step.encoding, operation: step.operation })
@@ -196,7 +196,7 @@ async function decodeAll() {
   let results = [];
   for (const enc of types) {
     try {
-      const r = await fetch('/decoder/encode/', {
+      const r = await fetch('/burp-suite/decoder/encode/', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ input, encoding: enc, operation: 'decode' })

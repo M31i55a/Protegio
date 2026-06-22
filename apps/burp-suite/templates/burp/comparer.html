@@ -34,7 +34,7 @@ async function compareTexts() {
   const t1 = document.getElementById('c-left').value;
   const t2 = document.getElementById('c-right').value;
   if (!t1 || !t2) { toast('Les deux textes sont requis', 'error'); return; }
-  const r = await fetch('/comparer/compare/', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text1:t1,text2:t2})});
+  const r = await fetch('/burp-suite/comparer/compare/', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text1:t1,text2:t2})});
   const d = await r.json();
   document.getElementById('compare-results').style.display = 'block';
   document.getElementById('changed-count').textContent = d.changed_lines + ' lignes différentes';

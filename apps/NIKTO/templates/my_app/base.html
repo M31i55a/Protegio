@@ -441,13 +441,13 @@
 <body>
 
 <nav>
-  <a href="{% url 'dashboard' %}" class="nav-brand">
+  <a href="{% url 'dashboard:home' %}" class="nav-brand">
     <div class="nav-logo">NK</div>
     <span class="nav-title">NIKTO<span>_SCAN</span></span>
   </a>
 
   <ul class="nav-links">
-    <li><a href="{% url 'dashboard' %}" {% if request.resolver_match.url_name == 'dashboard' %}class="active"{% endif %}>Dashboard</a></li>
+    <li><a href="{% url 'dashboard:home' %}" {% if request.resolver_match.url_name == 'dashboard' %}class="active"{% endif %}>Dashboard</a></li>
     <li><a href="{% url 'scan_list' %}" {% if request.resolver_match.url_name == 'scan_list' %}class="active"{% endif %}>Scans</a></li>
   </ul>
 

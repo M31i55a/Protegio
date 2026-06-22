@@ -335,7 +335,7 @@
     <span class="brand-type">OSINT</span>
   </div>
   <div class="nav-links">
-    <a href="{% url 'dashboard' %}"
+    <a href="{% url 'dashboard:home' %}"
        class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
       Dashboard
     </a>

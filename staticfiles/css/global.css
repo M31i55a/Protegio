@@ -162,3 +162,284 @@ a, button {
     
     .card { border-radius: 12px; }
 }
+
+/* ===================== INTEGRATIONS ENHANCEMENT ===================== */
+
+/* Table Styling */
+.table {
+    background: var(--bg-light);
+}
+
+.table thead {
+    background: linear-gradient(135deg, var(--primary-light) 0%, #f0f8ff 100%);
+    border-bottom: 2px solid var(--primary);
+}
+
+.table thead th {
+    color: var(--primary-dark);
+    font-weight: 700;
+    padding: 1rem;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    border: none;
+}
+
+.table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: var(--transition);
+}
+
+.table tbody tr:hover {
+    background: linear-gradient(90deg, transparent, #f0f4f8, transparent);
+    box-shadow: inset 0 0 8px rgba(0, 102, 255, 0.05);
+}
+
+.table td {
+    padding: 1rem;
+    color: var(--text);
+    vertical-align: middle;
+}
+
+.table code {
+    background: #f5f5f5;
+    color: #d63384;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Badge Enhancements */
+.badge {
+    font-weight: 600;
+    padding: 0.6rem 0.9rem;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.bg-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+    color: white !important;
+}
+
+.badge-high {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+    color: white !important;
+}
+
+.bg-info {
+    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%) !important;
+    color: white !important;
+}
+
+.bg-warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+    color: white !important;
+}
+
+.bg-danger {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+    color: white !important;
+}
+
+/* Card Header Enhancement */
+.card-header {
+    background: linear-gradient(135deg, var(--primary-light) 0%, #f0f8ff 100%);
+    border-bottom: 2px solid var(--primary);
+    padding: 1.25rem;
+}
+
+.card-header h5 {
+    color: var(--primary-dark);
+    font-weight: 700;
+    margin: 0;
+    text-transform: uppercase;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+}
+
+/* Card Body Enhancement */
+.card-body {
+    padding: 1.25rem;
+    background: var(--bg-light);
+}
+
+.card-body p {
+    margin-bottom: 0.75rem;
+    color: var(--text);
+    line-height: 1.6;
+}
+
+.card-body strong {
+    color: var(--primary-dark);
+    font-weight: 700;
+}
+
+/* Button Styling Enhancement */
+.btn-info {
+    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%) !important;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.btn-info:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(14, 165, 233, 0.3) !important;
+    color: white;
+}
+
+.btn-outline-primary {
+    color: var(--primary);
+    border: 2px solid var(--primary);
+    border-radius: 8px;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.btn-outline-primary:hover {
+    background: var(--primary);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 102, 255, 0.3);
+}
+
+/* Result Cards */
+.result-card {
+    background: var(--bg-light);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    transition: var(--transition);
+}
+
+.result-card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 8px 16px rgba(0, 102, 255, 0.15);
+    transform: translateY(-4px);
+}
+
+.result-card.critical {
+    border-left: 5px solid #ef4444;
+}
+
+.result-card.high {
+    border-left: 5px solid #f59e0b;
+}
+
+.result-card.medium {
+    border-left: 5px solid #3b82f6;
+}
+
+.result-card.low {
+    border-left: 5px solid #10b981;
+}
+
+/* Vulnerability List */
+.vulnerability-list {
+    list-style: none;
+    padding: 0;
+}
+
+.vulnerability-list li {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    color: var(--text);
+}
+
+.vulnerability-list li:last-child {
+    border-bottom: none;
+}
+
+.vulnerability-list i {
+    margin-right: 0.75rem;
+    font-size: 1.1rem;
+}
+
+/* Status Indicators */
+.status-pending {
+    color: #f59e0b;
+    font-weight: 600;
+}
+
+.status-in_progress {
+    color: #3b82f6;
+    font-weight: 600;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.status-completed {
+    color: #10b981;
+    font-weight: 600;
+}
+
+.status-failed {
+    color: #ef4444;
+    font-weight: 600;
+}
+
+/* Detail View Enhancement */
+.detail-header {
+    background: linear-gradient(135deg, var(--primary-light) 0%, #f0f8ff 100%);
+    border-bottom: 2px solid var(--primary);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border-radius: 12px;
+}
+
+.detail-header h1 {
+    color: var(--primary-dark);
+    font-weight: 700;
+    margin: 0;
+}
+
+.detail-section {
+    margin-bottom: 2rem;
+}
+
+.detail-section-title {
+    color: var(--primary-dark);
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--primary-light);
+}
+
+.metric-card {
+    background: linear-gradient(135deg, var(--bg-light) 0%, #f8fafc 100%);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: var(--transition);
+}
+
+.metric-card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 8px 16px rgba(0, 102, 255, 0.1);
+    transform: translateY(-4px);
+}
+
+.metric-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 0.5rem 0;
+}
+
+.metric-label {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}

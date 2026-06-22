@@ -40,7 +40,6 @@ urlpatterns = [
     path('havest/', include('apps.havest.urls')),
 ]
 
-# Servir les fichiers statiques et médias en développement uniquement
+# Servir les fichiers médias en développement uniquement
 if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

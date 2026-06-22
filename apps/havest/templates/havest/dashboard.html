@@ -397,7 +397,7 @@
 
   function pollStatus(sessionId) {
     const interval = setInterval(() => {
-      fetch(`/scans/${sessionId}/status/`)
+      fetch(`/havest/scans/${sessionId}/status/`)
         .then(r => r.json())
         .then(data => {
           document.getElementById('progress-status').textContent =
@@ -406,7 +406,7 @@
             clearInterval(interval);
             resetBtn();
             if (data.status === 'completed') {
-              window.location.href = `/scans/${sessionId}/results/`;
+              window.location.href = `/havest/scans/${sessionId}/results/`;
             } else {
               alert('Scan échoué : ' + (data.error || 'erreur inconnue'));
             }

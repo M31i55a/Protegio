@@ -82,7 +82,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             BASE_DIR / 'templates',
-            BASE_DIR / 'apps' / 'burp-suite' / 'templates',  # ← ajoute cette ligne
+            BASE_DIR / 'apps' / 'burp-suite' / 'templates',
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -150,6 +150,14 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# Session Configuration (persistence & security)
+SESSION_COOKIE_AGE = 1209600          # 2 weeks in seconds
+SESSION_COOKIE_HTTPONLY = True        # Not accessible via JS
+SESSION_COOKIE_SAMESITE = 'Lax'       # CSRF protection
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # Remember Me controls this
+SESSION_SAVE_EVERY_REQUEST = True     # Refresh expiry on each request
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
 # OWASP ZAP Configuration
 ZAP_DAEMON_URL = os.environ.get('ZAP_DAEMON_URL', 'http://127.0.0.1:8080')

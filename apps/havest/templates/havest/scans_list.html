@@ -82,7 +82,7 @@
 {% block content %}
 <div class="page-header">
   <h2 class="section-title" style="margin-bottom:0;">Tous les Scans</h2>
-  <a href="{% url 'dashboard' %}" class="btn btn-muted">← Dashboard</a>
+  <a href="{% url 'dashboard:home' %}" class="btn btn-muted">← Dashboard</a>
 </div>
 
 <div class="table-card">
@@ -140,7 +140,7 @@
     <div class="empty-icon">◉</div>
     <p>Aucun scan effectué.</p>
     <p class="empty-hint">
-      <a href="{% url 'dashboard' %}">Lancez votre premier scan →</a>
+      <a href="{% url 'dashboard:home' %}">Lancez votre premier scan →</a>
     </p>
   </div>
   {% endif %}

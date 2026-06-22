@@ -128,6 +128,25 @@
             color: #6e7681;
         }
 
+        .remember-group {
+            margin-bottom: 0.5rem;
+        }
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            user-select: none;
+        }
+        .checkbox-label input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
         .btn-login {
             width: 100%;
             background: linear-gradient(135deg, var(--accent) 0%, #388bfd 100%);
@@ -393,6 +412,14 @@
                         placeholder="Enter your password"
                         required
                     >
+                </div>
+
+                <div class="form-group remember-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="remember_me" id="remember_me" checked>
+                        <span class="checkbox-custom"></span>
+                        Remember me for 2 weeks
+                    </label>
                 </div>
 
                 <button type="submit" class="btn-login">

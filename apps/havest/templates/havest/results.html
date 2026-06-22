@@ -88,7 +88,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 <nav class="navbar">
   <div class="logo"><div class="logo-dot"></div>theHarvester // OSINT</div>
   <div class="nav-links">
-    <a href="{% url 'dashboard' %}">Dashboard</a>
+    <a href="{% url 'dashboard:home' %}">Dashboard</a>
     <a href="{% url 'scans_list' %}">Scans</a>
   </div>
 </nav>
@@ -96,7 +96,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 <div class="container">
 
   <div class="page-header">
-    <a href="{% url 'dashboard' %}" class="back-link">← Retour</a>
+    <a href="{% url 'dashboard:home' %}" class="back-link">← Retour</a>
     <div class="page-title">{{ session.domain }}</div>
     <div class="page-meta">
       Scan du {{ session.created_at|date:"d/m/Y à H:i" }} &nbsp;·&nbsp;
