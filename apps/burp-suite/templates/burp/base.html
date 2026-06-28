@@ -1,30 +1,70 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" id="theme-color" content="#1a1a2e">
     <title>burp_suite Suite Professional</title>
     <style>
+        [data-theme="dark"] {
+            --bg-primary: #1a1a2e;
+            --bg-toolbar: #0d0d1a;
+            --bg-tab: #16213e;
+            --bg-tab-hover: #1e2d4a;
+            --bg-tab-active: #1a1a2e;
+            --border: #333;
+            --text-primary: #e0e0e0;
+            --text-secondary: #ccc;
+            --text-muted: #888;
+            --text-info: #666;
+            --accent: #ff6b35;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #ffffff;
+            --bg-toolbar: #e8e8e8;
+            --bg-tab: #f0f0f0;
+            --bg-tab-hover: #e0e0e0;
+            --bg-tab-active: #ffffff;
+            --border: #ccc;
+            --text-primary: #222;
+            --text-secondary: #444;
+            --text-muted: #666;
+            --text-info: #888;
+            --accent: #e05a1a;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #1a1a2e; color: #e0e0e0; font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; }
+        body { background: var(--bg-primary); color: var(--text-primary); font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; }
 
-        .main-toolbar { display: flex; align-items: center; background: #0d0d1a; border-bottom: 1px solid #333; padding: 0; height: 36px; }
-        .burp_suite-logo { width: 32px; height: 32px; background: #ff6b35; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff; font-size: 14px; margin: 0 8px; border-radius: 3px; }
+        [data-theme="dark"] .theme-toggle .fa-sun { display: inline-block; }
+        [data-theme="dark"] .theme-toggle .fa-moon { display: none; }
+        [data-theme="light"] .theme-toggle .fa-sun { display: none; }
+        [data-theme="light"] .theme-toggle .fa-moon { display: inline-block; }
+        .theme-toggle {
+            background: none; border: none; color: var(--text-info); cursor: pointer;
+            font-size: 13px; padding: 0 10px; display: flex; align-items: center;
+            transition: color 0.2s;
+        }
+        .theme-toggle:hover { color: var(--accent); }
+
+        .main-toolbar { display: flex; align-items: center; background: var(--bg-toolbar); border-bottom: 1px solid var(--border); padding: 0; height: 36px; }
+        .burp_suite-logo { width: 32px; height: 32px; background: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff; font-size: 14px; margin: 0 8px; border-radius: 3px; }
         .menu-items { display: flex; gap: 0; }
-        .menu-item { padding: 0 14px; height: 36px; display: flex; align-items: center; color: #ccc; cursor: pointer; font-size: 12px; }
-        .menu-item:hover { background: #252540; color: #fff; }
+        .menu-item { padding: 0 14px; height: 36px; display: flex; align-items: center; color: var(--text-secondary); cursor: pointer; font-size: 12px; }
+        .menu-item:hover { background: var(--bg-tab-hover); color: var(--text-primary); }
 
-        .project-info { margin-left: auto; padding-right: 16px; font-size: 11px; color: #666; }
+        .project-info { margin-left: auto; padding-right: 8px; font-size: 11px; color: var(--text-info); display: flex; align-items: center; gap: 8px; }
 
-        .tab-bar { display: flex; background: #16213e; border-bottom: 2px solid #0d0d1a; overflow-x: auto; }
-        .tab { padding: 10px 20px; cursor: pointer; font-size: 12px; color: #888; border-bottom: 2px solid transparent; margin-bottom: -2px; white-space: nowrap; position: relative; transition: all 0.2s; }
-        .tab:hover { color: #ccc; background: #1e2d4a; }
-        .tab.active { color: #ff6b35; border-bottom: 2px solid #ff6b35; background: #1a1a2e; font-weight: 600; }
-        .tab .badge { background: #ff6b35; color: #fff; font-size: 9px; padding: 1px 4px; border-radius: 8px; margin-left: 4px; }
+        .tab-bar { display: flex; background: var(--bg-tab); border-bottom: 2px solid var(--bg-toolbar); overflow-x: auto; }
+        .tab { padding: 10px 20px; cursor: pointer; font-size: 12px; color: var(--text-muted); border-bottom: 2px solid transparent; margin-bottom: -2px; white-space: nowrap; position: relative; transition: all 0.2s; }
+        .tab:hover { color: var(--text-secondary); background: var(--bg-tab-hover); }
+        .tab.active { color: var(--accent); border-bottom: 2px solid var(--accent); background: var(--bg-tab-active); font-weight: 600; }
+        .tab .badge { background: var(--accent); color: #fff; font-size: 9px; padding: 1px 4px; border-radius: 8px; margin-left: 4px; }
 
         .content { min-height: calc(100vh - 76px); }
 
-        .status-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #ff6b35; color: #000; padding: 3px 16px; font-size: 11px; display: flex; align-items: center; gap: 20px; z-index: 1000; font-weight: 600; }
+        .status-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--accent); color: #000; padding: 3px 16px; font-size: 11px; display: flex; align-items: center; gap: 20px; z-index: 1000; font-weight: 600; }
         .status-bar span { color: #000; }
     </style>
 </head>
@@ -41,7 +81,13 @@
         <div class="menu-item">View</div>
         <div class="menu-item">Help</div>
     </div>
-    <div class="project-info">Temporary Project · burp_suite Suite Professional v2024.1</div>
+    <div class="project-info">
+        <span>Temporary Project · burp_suite Suite Professional v2024.1</span>
+        <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+            <i class="fa-solid fa-sun"></i>
+            <i class="fa-solid fa-moon"></i>
+        </button>
+    </div>
 </div>
 
 <div class="tab-bar">
@@ -68,6 +114,22 @@
     <span>Ready</span>
     <span style="margin-left:auto;">burp_suite Suite Professional v2024.1</span>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const saved = localStorage.getItem('protegio-theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', saved);
+    });
+
+    function toggleTheme() {
+        const current = document.documentElement.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('protegio-theme', next);
+        const meta = document.getElementById('theme-color');
+        if (meta) meta.content = next === 'dark' ? '#1a1a2e' : '#ffffff';
+    }
+</script>
 
 </body>
 </html>

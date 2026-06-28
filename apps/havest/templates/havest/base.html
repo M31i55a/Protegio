@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" id="theme-color" content="#090d13">
   <title>{% block title %}theHarvester // OSINT{% endblock %}</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap');
 
-    :root {
+    [data-theme="dark"] {
       --bg-primary:   #090d13;
       --bg-secondary: #0e1520;
       --bg-card:      #111827;
@@ -28,6 +29,27 @@
       --font-ui:      'Rajdhani', sans-serif;
     }
 
+    [data-theme="light"] {
+      --bg-primary:   #f6f8fa;
+      --bg-secondary: #ffffff;
+      --bg-card:      #ffffff;
+      --bg-hover:     #f0f4f8;
+      --border:       #d0d7de;
+      --border-glow:  #58a6ff;
+      --cyan:         #0969da;
+      --cyan-dim:     #0550ae;
+      --green:        #1a7f37;
+      --green-dim:    #116329;
+      --yellow:       #9a6700;
+      --red:          #cf222e;
+      --purple:       #8250df;
+      --text-primary: #1f2328;
+      --text-muted:   #656d76;
+      --text-dim:     #8c959f;
+      --font-mono:    'Share Tech Mono', monospace;
+      --font-ui:      'Rajdhani', sans-serif;
+    }
+
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
@@ -36,6 +58,9 @@
       font-family: var(--font-mono);
       font-size: 13px;
       min-height: 100vh;
+    }
+
+    [data-theme="dark"] body {
       background-image:
         linear-gradient(rgba(0, 212, 255, 0.02) 1px, transparent 1px),
         linear-gradient(90deg, rgba(0, 212, 255, 0.02) 1px, transparent 1px);
@@ -52,7 +77,7 @@
       align-items: center;
       padding: 0 32px;
       height: 52px;
-      background: rgba(9, 13, 19, 0.95);
+      background: var(--bg-secondary);
       border-bottom: 1px solid var(--border);
       backdrop-filter: blur(10px);
     }
@@ -322,6 +347,29 @@
     ::-webkit-scrollbar-track { background: var(--bg-primary); }
     ::-webkit-scrollbar-thumb { background: var(--border); }
     ::-webkit-scrollbar-thumb:hover { background: var(--cyan-dim); }
+
+    [data-theme="dark"] .theme-toggle .fa-sun { display: inline-block; }
+    [data-theme="dark"] .theme-toggle .fa-moon { display: none; }
+    [data-theme="light"] .theme-toggle .fa-sun { display: none; }
+    [data-theme="light"] .theme-toggle .fa-moon { display: inline-block; }
+    .theme-toggle {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 13px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      margin-left: 8px;
+    }
+    .theme-toggle:hover {
+      color: var(--cyan);
+      border-color: var(--cyan);
+    }
   </style>
   {% block extra_css %}{% endblock %}
 </head>
@@ -344,6 +392,10 @@
       Scans
     </a>
     <a href="/admin/">Admin</a>
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <i class="fa-solid fa-sun"></i>
+      <i class="fa-solid fa-moon"></i>
+    </button>
   </div>
 </nav>
 
@@ -359,6 +411,26 @@
   {% block content %}{% endblock %}
 </div>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const saved = localStorage.getItem('protegio-theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', saved);
+        updateThemeUI(saved);
+    });
+
+    function toggleTheme() {
+        const current = document.documentElement.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('protegio-theme', next);
+        updateThemeUI(next);
+    }
+
+    function updateThemeUI(theme) {
+        const meta = document.getElementById('theme-color');
+        if (meta) meta.content = theme === 'dark' ? '#090d13' : '#f6f8fa';
+    }
+</script>
 {% block extra_js %}{% endblock %}
 </body>
 </html>

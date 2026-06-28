@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" id="theme-color" content="#0d1117">
     <title>Login - PROTEGIO</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        :root {
+        [data-theme="dark"] {
             --primary: #58a6ff;
             --dark: #0d1117;
             --card-bg: #161b22;
@@ -21,8 +22,22 @@
             --github: #333;
         }
 
+        [data-theme="light"] {
+            --primary: #0066ff;
+            --dark: #ffffff;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --border-color: #e2e8f0;
+            --text-muted: #64748b;
+            --accent: #0066ff;
+            --border: #e2e8f0;
+            --google: #4285F4;
+            --microsoft: #0078D4;
+            --github: #24292e;
+        }
+
         body {
-            background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+            background: linear-gradient(135deg, var(--dark) 0%, var(--card-bg) 100%);
             color: var(--text-main);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
             min-height: 100vh;
@@ -38,11 +53,11 @@
         }
 
         .login-card {
-            background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
+            background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
         }
 
         .logo-section {
@@ -106,7 +121,7 @@
         }
 
         .form-control {
-            background-color: #0d1117;
+            background-color: var(--dark);
             border: 1px solid var(--border);
             color: var(--text-main);
             padding: 10px 12px;
@@ -117,7 +132,7 @@
         }
 
         .form-control:focus {
-            background-color: #0d1117;
+            background-color: var(--dark);
             border-color: var(--accent);
             color: var(--text-main);
             box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1);
@@ -203,7 +218,7 @@
             padding: 14px 16px;
             border: 1.5px solid var(--border-color);
             border-radius: 8px;
-            background-color: #0d1117;
+            background-color: var(--dark);
             color: var(--text-main);
             text-decoration: none;
             display: flex;
@@ -323,9 +338,40 @@
             color: #3fb950;
         }
 
+        [data-theme="dark"] .theme-toggle-btn .fa-moon { display: none; }
+        [data-theme="dark"] .theme-toggle-btn .fa-sun { display: inline-block; }
+        [data-theme="light"] .theme-toggle-btn .fa-moon { display: inline-block; }
+        [data-theme="light"] .theme-toggle-btn .fa-sun { display: none; }
+        .theme-toggle-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            color: var(--text-main);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        .theme-toggle-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 <body>
+    <button class="theme-toggle-btn" onclick="toggleTheme()" aria-label="Toggle theme">
+        <i class="fas fa-moon"></i>
+        <i class="fas fa-sun"></i>
+    </button>
     <div class="login-container">
         <div class="login-card">
             <!-- Logo & Branding Section -->
@@ -433,6 +479,26 @@
         </div>
     </div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const saved = localStorage.getItem('protegio-theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', saved);
+            updateThemeUI(saved);
+        });
+
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('protegio-theme', next);
+            updateThemeUI(next);
+        }
+
+        function updateThemeUI(theme) {
+            const meta = document.getElementById('theme-color');
+            if (meta) meta.content = theme === 'dark' ? '#0d1117' : '#f8fafc';
+        }
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
