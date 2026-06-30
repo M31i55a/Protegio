@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 
@@ -52,3 +53,13 @@ def dashboard_home(request):
         'user': request.user,
     }
     return render(request, 'dashboard/dashboard.html', context)
+
+
+@login_required
+def api_stats(request):
+    stats = {
+        'total_scans': 3666,
+        'critical_alerts': 42,
+        'vulnerabilities': 156,
+    }
+    return JsonResponse(stats)

@@ -4,5 +4,6 @@ from . import views
 app_name = 'dashboard'
 
 urlpatterns = [
-    path('', views.dashboard_home, name='home'),        # ← dashboard authentifié
+    path('', views.dashboard_home, name='home'),
+    path('api/stats/', views.api_stats, name='api_stats'),
 ]

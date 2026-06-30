@@ -195,10 +195,9 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # Allauth configuration
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # Require email verification
+ACCOUNT_LOGIN_METHODS = {'email'}
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 7  # Confirmation link valid for 7 days
 LOGIN_REDIRECT_URL = 'dashboard:home'
 LOGIN_URL = 'accounts:login'
