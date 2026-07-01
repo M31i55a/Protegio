@@ -85,6 +85,18 @@
       .page.active {
         display: flex;
         flex-direction: column;
+        animation: fadeInPage 0.8s ease both;
+      }
+
+      @keyframes fadeInPage {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
 
       /* ══════════════════════════════════════
