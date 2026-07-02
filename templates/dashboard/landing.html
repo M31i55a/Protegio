@@ -85,13 +85,30 @@
       .page.active {
         display: flex;
         flex-direction: column;
-        animation: fadeInPage 0.8s ease both;
+        animation: fadeInPage 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+        will-change: opacity, transform;
+      }
+
+      .page.active > * {
+        animation: fadeInContent 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+        animation-delay: 0.08s;
       }
 
       @keyframes fadeInPage {
         from {
           opacity: 0;
-          transform: translateY(8px);
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeInContent {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
         }
         to {
           opacity: 1;
